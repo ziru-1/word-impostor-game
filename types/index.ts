@@ -13,8 +13,15 @@ export type GameStage = 'lobby' | 'playing' | 'voting' | 'results'
 export interface GameRoom {
   id: string
   hostId: string
-  players: PublicPlayer[]
+  players: Player[]
   sharedWord: string
   fakeWord: string
+  stage: GameStage
+}
+
+export interface PublicGameRoom {
+  id: string
+  hostId: string
+  players: PublicPlayer[]
   stage: GameStage
 }
