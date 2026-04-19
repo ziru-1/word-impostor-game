@@ -1,6 +1,18 @@
-import { Player, GameRoom } from '@impostor/types'
+import { Player, GameRoom, PublicGameRoom } from '@impostor/types'
 
 export const rooms = new Map<string, GameRoom>()
+
+export function toPublicGameRoom(room: GameRoom): PublicGameRoom {
+  const { sharedWord, fakeWord, ...rest } = room
+  return {
+    ...rest,
+    players: room.players.map(({ id, name, hasVoted }) => ({
+      id,
+      name,
+      hasVoted,
+    })),
+  }
+}
 
 export function createRoom(hostPlayer: Player): GameRoom {
   const room: GameRoom = {
