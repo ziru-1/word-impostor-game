@@ -12,6 +12,7 @@ export type GameStage = 'lobby' | 'playing' | 'voting' | 'results'
 
 export interface GameRoom {
   id: string
+  hostId: string
   players: PublicPlayer[]
   sharedWord: string
   fakeWord: string
