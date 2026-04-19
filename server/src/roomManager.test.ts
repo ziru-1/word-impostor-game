@@ -5,7 +5,6 @@ import { GameRoom, Player } from '@impostor/types'
 const hostPlayer: Player = {
   id: 'HOST1',
   name: 'Host Player',
-  hasVoted: false,
   isImpostor: false,
   word: '',
 }
@@ -13,7 +12,6 @@ const hostPlayer: Player = {
 const testPlayer: Player = {
   id: 'GUEST1',
   name: 'Test Player',
-  hasVoted: false,
   isImpostor: false,
   word: '',
 }
@@ -23,19 +21,19 @@ const mockRoom: GameRoom = {
   hostId: 'HOST1',
   stage: 'lobby',
   sharedWord: 'secret-word',
+  votes: [],
+  roundDecision: [],
   fakeWord: 'fake-word',
   players: [
     {
       id: 'P1',
       name: 'Alice',
-      hasVoted: false,
       word: 'secret-word',
       isImpostor: false,
     },
     {
       id: 'P2',
       name: 'Bob',
-      hasVoted: false,
       word: 'secret-word',
       isImpostor: true,
     },
@@ -84,7 +82,6 @@ describe('toPublicGameRoom', () => {
       expect(player).not.toHaveProperty('isImpostor')
       expect(player).toHaveProperty('id')
       expect(player).toHaveProperty('name')
-      expect(player).toHaveProperty('hasVoted')
     }
   })
 
@@ -96,5 +93,7 @@ describe('toPublicGameRoom', () => {
     expect(publicRoom.id).toBe(mockRoom.id)
     expect(publicRoom.hostId).toBe(mockRoom.hostId)
     expect(publicRoom.stage).toBe(mockRoom.stage)
+    expect(publicRoom.votes).toEqual(mockRoom.votes)
+    expect(publicRoom.roundDecision).toEqual(mockRoom.roundDecision)
   })
 })

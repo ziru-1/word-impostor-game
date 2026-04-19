@@ -6,10 +6,9 @@ export function toPublicGameRoom(room: GameRoom): PublicGameRoom {
   const { sharedWord, fakeWord, ...rest } = room
   return {
     ...rest,
-    players: room.players.map(({ id, name, hasVoted }) => ({
+    players: room.players.map(({ id, name }) => ({
       id,
       name,
-      hasVoted,
     })),
   }
 }
@@ -19,6 +18,8 @@ export function createRoom(hostPlayer: Player): GameRoom {
     id: Math.random().toString(36).slice(2, 7).toUpperCase(),
     hostId: hostPlayer.id,
     players: [hostPlayer],
+    votes: [],
+    roundDecision: [],
     sharedWord: '',
     fakeWord: '',
     stage: 'lobby',
