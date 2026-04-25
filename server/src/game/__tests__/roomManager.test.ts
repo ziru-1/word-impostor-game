@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createRoom, joinRoom, rooms, toPublicGameRoom } from './roomManager'
+import { createRoom, joinRoom, rooms, toPublicGameRoom } from '../roomManager'
 import { GameRoom, Player } from '@impostor/types'
 
 const hostPlayer: Player = {

@@ -1,6 +1,6 @@
 import { GameRoom } from '@impostor/types'
 import { describe, expect, it } from 'vitest'
-import { startGame, submitRoundDecision } from './gameLogic'
+import { startGame, submitRoundDecision } from '../gameLogic'
 
 function createMockRoom(overrides: Partial<GameRoom> = {}): GameRoom {
   return {
