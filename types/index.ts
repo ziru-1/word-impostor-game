@@ -23,6 +23,7 @@ export interface GameRoom {
   id: string
   hostId: string
   players: Player[]
+  roundNumber: number
   votes: Votes[]
   roundDecision: RoundDecision[]
   stage: GameStage

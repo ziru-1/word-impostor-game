@@ -16,6 +16,7 @@ export function startGame(room: GameRoom): GameRoom {
     sharedWord: wordPair.sharedWord,
     fakeWord: wordPair.fakeWord,
     stage: 'playing',
+    roundNumber: 1,
     votes: [],
     roundDecision: [],
   }

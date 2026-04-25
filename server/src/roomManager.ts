@@ -18,6 +18,7 @@ export function createRoom(hostPlayer: Player): GameRoom {
     id: Math.random().toString(36).slice(2, 7).toUpperCase(),
     hostId: hostPlayer.id,
     players: [hostPlayer],
+    roundNumber: 1,
     votes: [],
     roundDecision: [],
     sharedWord: '',

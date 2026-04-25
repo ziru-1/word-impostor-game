@@ -9,6 +9,7 @@ function createMockRoom(): GameRoom {
     stage: 'lobby',
     sharedWord: '',
     fakeWord: '',
+    roundNumber: 1,
     votes: [],
     roundDecision: [],
     players: [
@@ -25,6 +26,7 @@ describe('startGame', () => {
     const result = startGame(room)
 
     expect(result.stage).toBe('playing')
+    expect(result.roundNumber).toBe(1)
     expect(result.votes).toEqual([])
     expect(result.roundDecision).toEqual([])
   })
