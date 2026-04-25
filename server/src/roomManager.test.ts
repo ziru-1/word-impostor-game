@@ -23,7 +23,7 @@ const mockRoom: GameRoom = {
   sharedWord: 'secret-word',
   roundNumber: 1,
   votes: [],
-  roundDecision: [],
+  roundDecisions: [],
   fakeWord: 'fake-word',
   players: [
     {
@@ -96,6 +96,6 @@ describe('toPublicGameRoom', () => {
     expect(publicRoom.stage).toBe(mockRoom.stage)
     expect(publicRoom.roundNumber).toBe(mockRoom.roundNumber)
     expect(publicRoom.votes).toEqual(mockRoom.votes)
-    expect(publicRoom.roundDecision).toEqual(mockRoom.roundDecision)
+    expect(publicRoom.roundDecisions).toEqual(mockRoom.roundDecisions)
   })
 })

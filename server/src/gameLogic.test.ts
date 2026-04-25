@@ -11,7 +11,7 @@ function createMockRoom(): GameRoom {
     fakeWord: '',
     roundNumber: 1,
     votes: [],
-    roundDecision: [],
+    roundDecisions: [],
     players: [
       { id: 'HOST1', name: 'Host', word: '', isImpostor: false },
       { id: 'P1', name: 'Alice', word: '', isImpostor: false },
@@ -28,7 +28,7 @@ describe('startGame', () => {
     expect(result.stage).toBe('playing')
     expect(result.roundNumber).toBe(1)
     expect(result.votes).toEqual([])
-    expect(result.roundDecision).toEqual([])
+    expect(result.roundDecisions).toEqual([])
   })
 
   it('assigns exactly one impostor', () => {

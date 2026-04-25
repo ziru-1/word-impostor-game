@@ -14,7 +14,7 @@ export interface Votes {
   target: Player['id']
 }
 
-export interface RoundDecision {
+export interface RoundDecisions {
   playerId: Player['id']
   choice: 'skip' | 'vote'
 }
@@ -25,7 +25,7 @@ export interface GameRoom {
   players: Player[]
   roundNumber: number
   votes: Votes[]
-  roundDecision: RoundDecision[]
+  roundDecisions: RoundDecisions[]
   stage: GameStage
   sharedWord: string
   fakeWord: string

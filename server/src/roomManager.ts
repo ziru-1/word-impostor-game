@@ -20,7 +20,7 @@ export function createRoom(hostPlayer: Player): GameRoom {
     players: [hostPlayer],
     roundNumber: 1,
     votes: [],
-    roundDecision: [],
+    roundDecisions: [],
     sharedWord: '',
     fakeWord: '',
     stage: 'lobby',
