@@ -1,4 +1,4 @@
-import { GameRoom } from '@impostor/types'
+import { GameRoom, Player } from '@impostor/types'
 
 export function createMockRoom(overrides: Partial<GameRoom> = {}): GameRoom {
   return {
@@ -11,10 +11,25 @@ export function createMockRoom(overrides: Partial<GameRoom> = {}): GameRoom {
     votes: [],
     roundDecisions: [],
     players: [
-      { id: 'P1', name: 'Alice', word: 'dog', isImpostor: false },
-      { id: 'P2', name: 'Bob', word: 'dog', isImpostor: false },
-      { id: 'P3', name: 'Charlie', word: 'cat', isImpostor: true },
+      createMockPlayer({ id: 'P1', name: 'Alice' }),
+      createMockPlayer({ id: 'P2', name: 'Bob' }),
+      createMockPlayer({
+        id: 'P3',
+        name: 'Charlie',
+        isImpostor: true,
+        word: 'cat',
+      }),
     ],
+    ...overrides,
+  }
+}
+
+export function createMockPlayer(overrides: Partial<Player> = {}): Player {
+  return {
+    id: 'P1',
+    name: 'Test Player',
+    word: 'dog',
+    isImpostor: false,
     ...overrides,
   }
 }
