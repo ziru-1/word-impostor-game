@@ -19,6 +19,7 @@ export function startGame(room: GameRoom): GameRoom {
     roundNumber: 1,
     votes: [],
     roundDecisions: [],
+    votedOutPlayerId: null,
   }
 
   return updatedRoom

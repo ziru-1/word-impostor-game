@@ -24,6 +24,7 @@ export function createRoom(hostPlayer: Player): GameRoom {
     sharedWord: '',
     fakeWord: '',
     stage: 'lobby',
+    votedOutPlayerId: null,
   }
 
   rooms.set(room.id, room)

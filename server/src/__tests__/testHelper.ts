@@ -20,6 +20,7 @@ export function createMockRoom(overrides: Partial<GameRoom> = {}): GameRoom {
         word: 'cat',
       }),
     ],
+    votedOutPlayerId: null,
     ...overrides,
   }
 }

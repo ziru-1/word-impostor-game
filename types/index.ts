@@ -29,6 +29,7 @@ export interface GameRoom {
   stage: GameStage
   sharedWord: string
   fakeWord: string
+  votedOutPlayerId: string | null
 }
 
 export type PublicGameRoom = Omit<
