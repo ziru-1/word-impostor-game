@@ -74,8 +74,68 @@ export function submitRoundDecision(
   }
 }
 
-// export function castVote(
-//   room: GameRoom,
-//   voterId: string,
-//   targetId: string,
-// ): GameRoom {}
+export function castVote(
+  room: GameRoom,
+  voterId: string,
+  targetId: string,
+): GameRoom {
+  if (room.stage !== 'voting') {
+    throw new Error('Game stage must be in voting')
+  }
+
+  if (voterId === targetId) {
+    throw new Error("Player can't vote themselves")
+  }
+
+  const targetExists = room.players.some((p) => p.id === targetId)
+  if (!targetExists) {
+    throw new Error('Target player not found in room')
+  }
+
+  if (room.votes.some((player) => player.voterId === voterId)) {
+    throw new Error('Player has already voted')
+  }
+
+  const updatedVotes = room.votes.concat({ voterId, targetId })
+
+  const votesVoterIds = new Set(updatedVotes.map((d) => d.voterId))
+  const allPlayersVoted = room.players.every((player) =>
+    votesVoterIds.has(player.id),
+  )
+
+  if (!allPlayersVoted) {
+    return {
+      ...room,
+      votes: updatedVotes,
+    }
+  }
+
+  let maxVotes = 0
+  let leaders: string[] = []
+
+  const voteCounts: Record<string, number> = {}
+
+  for (const vote of updatedVotes) {
+    const count = (voteCounts[vote.targetId] || 0) + 1
+    voteCounts[vote.targetId] = count
+
+    if (count > maxVotes) {
+      maxVotes = count
+      leaders = [vote.targetId]
+    } else if (count === maxVotes) {
+      leaders.push(vote.targetId)
+    }
+  }
+
+  const votedOutPlayerId =
+    leaders.length === 1
+      ? leaders[0]
+      : leaders[Math.floor(Math.random() * leaders.length)]
+
+  return {
+    ...room,
+    votes: updatedVotes,
+    votedOutPlayerId,
+    stage: 'results',
+  }
+}
