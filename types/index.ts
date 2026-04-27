@@ -9,12 +9,12 @@ export type PublicPlayer = Omit<Player, 'word' | 'isImpostor'>
 
 export type GameStage = 'lobby' | 'playing' | 'voting' | 'results'
 
-export interface Votes {
-  voter: Player['id']
-  target: Player['id']
+export interface Vote {
+  voterId: Player['id']
+  targetId: Player['id']
 }
 
-export interface RoundDecisions {
+export interface RoundDecision {
   playerId: Player['id']
   choice: 'skip' | 'vote'
 }
@@ -24,8 +24,8 @@ export interface GameRoom {
   hostId: string
   players: Player[]
   roundNumber: number
-  votes: Votes[]
-  roundDecisions: RoundDecisions[]
+  votes: Vote[]
+  roundDecisions: RoundDecision[]
   stage: GameStage
   sharedWord: string
   fakeWord: string
