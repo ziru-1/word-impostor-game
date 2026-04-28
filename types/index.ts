@@ -38,3 +38,30 @@ export type PublicGameRoom = Omit<
 > & {
   players: PublicPlayer[]
 }
+
+export interface CreateRoomPayload {
+  name: string
+}
+
+export interface JoinRoomPayload {
+  name: string
+  roomId: string
+}
+
+export interface StartGamePayload {
+  roomId: string
+}
+
+export interface SubmitDecisionPayload {
+  roomId: string
+  choice: 'skip' | 'vote'
+}
+
+export interface CastVotePayload {
+  roomId: string
+  targetId: string
+}
+
+export interface LeaveRoomPayload {
+  roomId: string
+}
