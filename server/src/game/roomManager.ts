@@ -42,3 +42,38 @@ export function joinRoom(roomId: string, player: Player): GameRoom {
 
   return room
 }
+
+export function removePlayerFromRoom(
+  roomId: string,
+  playerId: string,
+): GameRoom | null {
+  const room = rooms.get(roomId)
+
+  if (!room) {
+    throw new Error('Room not found')
+  }
+
+  const remainingPlayers = room.players.filter((p) => p.id !== playerId)
+
+  if (remainingPlayers.length === 0) {
+    rooms.delete(roomId)
+    return null
+  }
+
+  let newHostId = room.hostId
+
+  if (room.hostId === playerId) {
+    const randomIndex = Math.floor(Math.random() * remainingPlayers.length)
+    newHostId = remainingPlayers[randomIndex].id
+  }
+
+  const updatedRoom: GameRoom = {
+    ...room,
+    players: remainingPlayers,
+    hostId: newHostId,
+  }
+
+  rooms.set(roomId, updatedRoom)
+
+  return updatedRoom
+}
