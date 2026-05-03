@@ -13,6 +13,12 @@ export function toPublicGameRoom(room: GameRoom): PublicGameRoom {
   }
 }
 
+export function getRoom(roomId: string): GameRoom {
+  const room = rooms.get(roomId)
+  if (!room) throw new Error('Room not found')
+  return room
+}
+
 export function createRoom(hostPlayer: Player): GameRoom {
   const room: GameRoom = {
     id: Math.random().toString(36).slice(2, 7).toUpperCase(),
@@ -32,11 +38,7 @@ export function createRoom(hostPlayer: Player): GameRoom {
 }
 
 export function joinRoom(roomId: string, player: Player): GameRoom {
-  const room = rooms.get(roomId)
-
-  if (!room) {
-    throw new Error('Room not found')
-  }
+  const room = getRoom(roomId)
 
   room.players.push(player)
 
@@ -47,11 +49,7 @@ export function removePlayerFromRoom(
   roomId: string,
   playerId: string,
 ): GameRoom | null {
-  const room = rooms.get(roomId)
-
-  if (!room) {
-    throw new Error('Room not found')
-  }
+  const room = getRoom(roomId)
 
   const remainingPlayers = room.players.filter((p) => p.id !== playerId)
 
