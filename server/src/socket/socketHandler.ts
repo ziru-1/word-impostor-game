@@ -12,6 +12,7 @@ import {
   joinRoom,
   removePlayerFromRoom,
   toPublicGameRoom,
+  updateRoom,
 } from '../game/roomManager'
 
 const socketRoomMap = new Map<string, string>()
@@ -92,8 +93,7 @@ export function setupSocketHandler(io: Server) {
           )
         }
 
-        const updatedGameRoom = startGame(room)
-
+        const updatedGameRoom = updateRoom(startGame(room))
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
       } catch (error) {
         handleError(socket, error)
