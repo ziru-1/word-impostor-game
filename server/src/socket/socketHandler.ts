@@ -1,6 +1,18 @@
-import { CreateRoomPayload, JoinRoomPayload, Player } from '@impostor/types'
+import {
+  CreateRoomPayload,
+  JoinRoomPayload,
+  Player,
+  StartGamePayload,
+} from '@impostor/types'
 import { Server, Socket } from 'socket.io'
-import { createRoom, joinRoom, toPublicGameRoom } from '../game/roomManager'
+import { startGame } from '../game/gameLogic'
+import {
+  createRoom,
+  getRoom,
+  joinRoom,
+  rooms,
+  toPublicGameRoom,
+} from '../game/roomManager'
 
 function isInvalidName(name: string): boolean {
   return !name || name.trim() === ''
@@ -44,6 +56,32 @@ export function setupSocketHandler(io: Server) {
 
         socket.join(room.id)
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(room))
+      } catch (error) {
+        handleError(socket, error)
+      }
+    })
+
+    socket.on('startGame', (data: StartGamePayload) => {
+      try {
+        const room = getRoom(data.roomId)
+
+        if (room.players.length < 3) {
+          return socket.emit(
+            'error',
+            'Game must have three or more players to start',
+          )
+        }
+
+        if (socket.id !== room.hostId) {
+          return socket.emit(
+            'error',
+            'Game can only be started by the host player',
+          )
+        }
+
+        const updatedGameRoom = startGame(room)
+
+        io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
       } catch (error) {
         handleError(socket, error)
       }
