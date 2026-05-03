@@ -10,9 +10,11 @@ import {
   createRoom,
   getRoom,
   joinRoom,
-  rooms,
+  removePlayerFromRoom,
   toPublicGameRoom,
 } from '../game/roomManager'
+
+const socketRoomMap = new Map<string, string>()
 
 function isInvalidName(name: string): boolean {
   return !name || name.trim() === ''
@@ -27,6 +29,15 @@ function createPlayerFromSocket(socketId: string, name: string): Player {
 }
 
 export function setupSocketHandler(io: Server) {
+  function handlePlayerLeave(socket: Socket, roomId: string) {
+    socketRoomMap.delete(socket.id)
+    socket.leave(roomId)
+    const updatedRoom = removePlayerFromRoom(roomId, socket.id)
+    if (updatedRoom) {
+      io.to(roomId).emit('roomUpdated', toPublicGameRoom(updatedRoom))
+    }
+  }
+
   io.on('connection', (socket) => {
     console.log('a user connected', socket.id)
 
@@ -39,6 +50,7 @@ export function setupSocketHandler(io: Server) {
 
         const room = createRoom(player)
         socket.join(room.id)
+        socketRoomMap.set(socket.id, room.id)
         socket.emit('roomCreated', toPublicGameRoom(room))
       } catch (error) {
         handleError(socket, error)
@@ -55,6 +67,7 @@ export function setupSocketHandler(io: Server) {
         const room = joinRoom(data.roomId, player)
 
         socket.join(room.id)
+        socketRoomMap.set(socket.id, room.id)
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(room))
       } catch (error) {
         handleError(socket, error)
