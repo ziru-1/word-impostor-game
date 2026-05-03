@@ -86,5 +86,17 @@ export function setupSocketHandler(io: Server) {
         handleError(socket, error)
       }
     })
+
+    socket.on('leaveRoom', () => {
+      const roomId = socketRoomMap.get(socket.id)
+      if (!roomId) return
+      handlePlayerLeave(socket, roomId)
+    })
+
+    socket.on('disconnect', () => {
+      const roomId = socketRoomMap.get(socket.id)
+      if (!roomId) return
+      handlePlayerLeave(socket, roomId)
+    })
   })
 }
