@@ -19,6 +19,11 @@ export function getRoom(roomId: string): GameRoom {
   return room
 }
 
+export function updateRoom(room: GameRoom): GameRoom {
+  rooms.set(room.id, room)
+  return room
+}
+
 export function createRoom(hostPlayer: Player): GameRoom {
   const room: GameRoom = {
     id: Math.random().toString(36).slice(2, 7).toUpperCase(),
