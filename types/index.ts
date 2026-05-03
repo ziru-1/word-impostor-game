@@ -61,7 +61,3 @@ export interface CastVotePayload {
   roomId: string
   targetId: string
 }
-
-export interface LeaveRoomPayload {
-  roomId: string
-}
