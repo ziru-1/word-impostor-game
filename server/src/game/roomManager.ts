@@ -44,10 +44,12 @@ export function createRoom(hostPlayer: Player): GameRoom {
 
 export function joinRoom(roomId: string, player: Player): GameRoom {
   const room = getRoom(roomId)
-
-  room.players.push(player)
-
-  return room
+  const updatedRoom = {
+    ...room,
+    players: [...room.players, player],
+  }
+  rooms.set(roomId, updatedRoom)
+  return updatedRoom
 }
 
 export function removePlayerFromRoom(
