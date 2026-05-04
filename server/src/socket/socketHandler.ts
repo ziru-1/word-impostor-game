@@ -1,11 +1,13 @@
 import {
+  CastVotePayload,
   CreateRoomPayload,
   JoinRoomPayload,
   Player,
   StartGamePayload,
+  SubmitDecisionPayload,
 } from '@impostor/types'
 import { Server, Socket } from 'socket.io'
-import { startGame } from '../game/gameLogic'
+import { castVote, startGame, submitRoundDecision } from '../game/gameLogic'
 import {
   createRoom,
   getRoom,
@@ -94,6 +96,39 @@ export function setupSocketHandler(io: Server) {
         }
 
         const updatedGameRoom = updateRoom(startGame(room))
+        io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
+      } catch (error) {
+        handleError(socket, error)
+      }
+    })
+
+    socket.on('submitDecision', (data: SubmitDecisionPayload) => {
+      try {
+        const room = getRoom(data.roomId)
+
+        if (!(data.choice === 'skip' || data.choice === 'vote')) {
+          return socket.emit(
+            'error',
+            'Decisions should only be either skip or vote',
+          )
+        }
+
+        const updatedGameRoom = updateRoom(
+          submitRoundDecision(room, socket.id, data.choice),
+        )
+        io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
+      } catch (error) {
+        handleError(socket, error)
+      }
+    })
+
+    socket.on('castVote', (data: CastVotePayload) => {
+      try {
+        const room = getRoom(data.roomId)
+
+        const updatedGameRoom = updateRoom(
+          castVote(room, socket.id, data.targetId),
+        )
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
       } catch (error) {
         handleError(socket, error)
