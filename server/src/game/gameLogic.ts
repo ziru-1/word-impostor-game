@@ -1,7 +1,10 @@
 import { GameRoom } from '@impostor/types'
 import { wordPairs } from './words'
 
-export function startGame(room: GameRoom): GameRoom {
+export function startGame(room: GameRoom, requesterId: string): GameRoom {
+  if (room.players.length < 3) throw new Error('Need at least 3 players')
+  if (requesterId !== room.hostId) throw new Error('Only host can start game')
+
   const wordPair = wordPairs[Math.floor(Math.random() * wordPairs.length)]
   const impostorIndex = Math.floor(Math.random() * room.players.length)
   const updatedPlayers = room.players.map((player, index) => ({
@@ -30,9 +33,11 @@ export function submitRoundDecision(
   playerId: string,
   choice: 'skip' | 'vote',
 ): GameRoom {
-  if (room.roundDecisions.some((player) => player.playerId === playerId)) {
+  if (room.roundDecisions.some((player) => player.playerId === playerId))
     throw new Error('Player has already voted')
-  }
+
+  if (!(choice === 'skip' || choice === 'vote'))
+    throw new Error('Decisions should only be either skip or vote')
 
   const updatedRoundDecision = room.roundDecisions.concat({ playerId, choice })
 
@@ -79,22 +84,15 @@ export function castVote(
   voterId: string,
   targetId: string,
 ): GameRoom {
-  if (room.stage !== 'voting') {
-    throw new Error('Game stage must be in voting')
-  }
+  if (room.stage !== 'voting') throw new Error('Game stage must be in voting')
 
-  if (voterId === targetId) {
-    throw new Error("Player can't vote themselves")
-  }
+  if (voterId === targetId) throw new Error("Player can't vote themselves")
 
   const targetExists = room.players.some((p) => p.id === targetId)
-  if (!targetExists) {
-    throw new Error('Target player not found in room')
-  }
+  if (!targetExists) throw new Error('Target player not found in room')
 
-  if (room.votes.some((player) => player.voterId === voterId)) {
+  if (room.votes.some((player) => player.voterId === voterId))
     throw new Error('Player has already voted')
-  }
 
   const updatedVotes = room.votes.concat({ voterId, targetId })
 

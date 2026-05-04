@@ -81,21 +81,7 @@ export function setupSocketHandler(io: Server) {
       try {
         const room = getRoom(data.roomId)
 
-        if (room.players.length < 3) {
-          return socket.emit(
-            'error',
-            'Game must have three or more players to start',
-          )
-        }
-
-        if (socket.id !== room.hostId) {
-          return socket.emit(
-            'error',
-            'Game can only be started by the host player',
-          )
-        }
-
-        const updatedGameRoom = updateRoom(startGame(room))
+        const updatedGameRoom = updateRoom(startGame(room, socket.id))
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
       } catch (error) {
         handleError(socket, error)
@@ -105,13 +91,6 @@ export function setupSocketHandler(io: Server) {
     socket.on('submitDecision', (data: SubmitDecisionPayload) => {
       try {
         const room = getRoom(data.roomId)
-
-        if (!(data.choice === 'skip' || data.choice === 'vote')) {
-          return socket.emit(
-            'error',
-            'Decisions should only be either skip or vote',
-          )
-        }
 
         const updatedGameRoom = updateRoom(
           submitRoundDecision(room, socket.id, data.choice),
