@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
-import { socket } from './socket/socket'
 import type { PublicGameRoom } from '@impostor/types'
+import { useEffect, useState } from 'react'
 import LandingPage from './components/LandingPage'
+import Lobby from './components/Lobby'
+import { socket } from './socket/socket'
 
 export default function App() {
   const [room, setRoom] = useState<PublicGameRoom | null>(null)
@@ -31,11 +32,17 @@ export default function App() {
     socket.emit('joinRoom', { name, roomId })
   }
 
+  function onStartGame(roomId: string) {
+    socket.emit('startGame', { roomId })
+  }
+
   switch (room?.stage ?? 'landing') {
     case 'landing':
       return <LandingPage onCreateRoom={onCreateRoom} onJoinRoom={onJoinRoom} />
     case 'lobby':
-      return <div>Lobby</div>
+      if (!room || !playerId) return null
+
+      return <Lobby room={room} playerId={playerId} onStartGame={onStartGame} />
     case 'playing':
       return <div>GameScreen</div>
     case 'voting':
