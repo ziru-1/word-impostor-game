@@ -3,11 +3,17 @@ import {
   CreateRoomPayload,
   JoinRoomPayload,
   Player,
+  PlayerDescriptionPayload,
   StartGamePayload,
   SubmitDecisionPayload,
 } from '@impostor/types'
 import { Server, Socket } from 'socket.io'
-import { castVote, startGame, submitRoundDecision } from '../game/gameLogic'
+import {
+  castVote,
+  startGame,
+  submitDescription,
+  submitRoundDecision,
+} from '../game/gameLogic'
 import {
   createRoom,
   getRoom,
@@ -90,6 +96,20 @@ export function setupSocketHandler(io: Server) {
             word: player.word,
           })
         })
+      } catch (error) {
+        handleError(socket, error)
+      }
+    })
+
+    socket.on('submitDescription', (data: PlayerDescriptionPayload) => {
+      try {
+        const room = getRoom(data.roomId)
+
+        const updatedRoom = updateRoom(
+          submitDescription(room, socket.id, data.text),
+        )
+
+        io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedRoom))
       } catch (error) {
         handleError(socket, error)
       }
