@@ -1,4 +1,4 @@
-import type { PublicGameRoom } from '@impostor/types'
+import type { PlayerGameData, PublicGameRoom } from '@impostor/types'
 import { useEffect, useState } from 'react'
 import LandingPage from './components/LandingPage'
 import Lobby from './components/Lobby'
@@ -7,17 +7,21 @@ import { socket } from './socket/socket'
 export default function App() {
   const [room, setRoom] = useState<PublicGameRoom | null>(null)
   const [playerId, setPlayerId] = useState<string | null>(null)
-  console.log(room)
+  const [playerData, setPlayerData] = useState<PlayerGameData | null>(null)
 
   useEffect(() => {
     socket.on('connect', () => setPlayerId(socket.id ?? null))
     socket.on('roomCreated', (room: PublicGameRoom) => setRoom(room))
     socket.on('roomUpdated', (room: PublicGameRoom) => setRoom(room))
+    socket.on('playerGameData', (playerData: PlayerGameData) =>
+      setPlayerData(playerData),
+    )
 
     return () => {
       socket.off('connect')
       socket.off('roomCreated')
       socket.off('roomUpdated')
+      socket.off('playerGameData')
       socket.disconnect()
     }
   }, [])

@@ -83,6 +83,13 @@ export function setupSocketHandler(io: Server) {
 
         const updatedGameRoom = updateRoom(startGame(room, socket.id))
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
+
+        updatedGameRoom.players.forEach((player) => {
+          io.to(player.id).emit('playerGameData', {
+            isImpostor: player.isImpostor,
+            word: player.word,
+          })
+        })
       } catch (error) {
         handleError(socket, error)
       }

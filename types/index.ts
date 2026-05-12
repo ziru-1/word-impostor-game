@@ -7,6 +7,11 @@ export interface Player {
 
 export type PublicPlayer = Omit<Player, 'word' | 'isImpostor'>
 
+export interface PlayerGameData {
+  word: string
+  isImpostor: boolean
+}
+
 export type GameStage = 'lobby' | 'playing' | 'voting' | 'results'
 
 export interface Vote {
