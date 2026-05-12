@@ -10,6 +10,8 @@ export function createMockRoom(overrides: Partial<GameRoom> = {}): GameRoom {
     roundNumber: 1,
     votes: [],
     roundDecisions: [],
+    descriptions: [],
+    descriptionOrder: ['P1', 'P2', 'P3'],
     players: [
       createMockPlayer({ id: 'P1', name: 'Alice' }),
       createMockPlayer({ id: 'P2', name: 'Bob' }),
