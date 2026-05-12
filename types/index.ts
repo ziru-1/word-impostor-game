@@ -24,16 +24,29 @@ export interface RoundDecision {
   choice: 'skip' | 'vote'
 }
 
+export interface PlayerDescription {
+  playerId: Player['id']
+  text: string
+}
+
 export interface GameRoom {
   id: string
   hostId: string
+
   players: Player[]
-  roundNumber: number
-  votes: Vote[]
-  roundDecisions: RoundDecision[]
+
   stage: GameStage
+  roundNumber: number
+
+  descriptionOrder: string[]
+  descriptions: PlayerDescription[]
+
+  roundDecisions: RoundDecision[]
+  votes: Vote[]
+
   sharedWord: string
   fakeWord: string
+
   votedOutPlayerId: string | null
 }
 
@@ -65,4 +78,9 @@ export interface SubmitDecisionPayload {
 export interface CastVotePayload {
   roomId: string
   targetId: string
+}
+
+export interface PlayerDescriptionPayload {
+  roomId: string
+  text: string
 }

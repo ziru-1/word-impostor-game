@@ -1,4 +1,4 @@
-import { GameRoom } from '@impostor/types'
+import { GameRoom, PlayerDescription } from '@impostor/types'
 import { wordPairs } from './words'
 
 export function startGame(room: GameRoom, requesterId: string): GameRoom {
@@ -6,26 +6,81 @@ export function startGame(room: GameRoom, requesterId: string): GameRoom {
   if (requesterId !== room.hostId) throw new Error('Only host can start game')
 
   const wordPair = wordPairs[Math.floor(Math.random() * wordPairs.length)]
+
   const impostorIndex = Math.floor(Math.random() * room.players.length)
+
   const updatedPlayers = room.players.map((player, index) => ({
     ...player,
     word: index === impostorIndex ? wordPair.fakeWord : wordPair.sharedWord,
     isImpostor: index === impostorIndex,
   }))
 
-  const updatedRoom: GameRoom = {
+  const descriptionOrder = updatedPlayers.map((player) => player.id)
+
+  // Fisher-Yates shuffle
+  for (let i = descriptionOrder.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+
+    ;[descriptionOrder[i], descriptionOrder[j]] = [
+      descriptionOrder[j],
+      descriptionOrder[i],
+    ]
+  }
+
+  return {
     ...room,
     players: updatedPlayers,
-    sharedWord: wordPair.sharedWord,
-    fakeWord: wordPair.fakeWord,
+
     stage: 'playing',
     roundNumber: 1,
+
+    sharedWord: wordPair.sharedWord,
+    fakeWord: wordPair.fakeWord,
+
+    descriptions: [],
+    descriptionOrder,
+
     votes: [],
     roundDecisions: [],
     votedOutPlayerId: null,
   }
+}
 
-  return updatedRoom
+export function submitDescription(
+  room: GameRoom,
+  playerId: string,
+  text: string,
+): GameRoom {
+  if (room.stage !== 'playing') {
+    throw new Error('Game is not in playing stage')
+  }
+
+  if (!text || text.trim() === '') {
+    throw new Error('Description cannot be empty')
+  }
+
+  const currentIndex = room.descriptions.length
+  const expectedPlayerId = room.descriptionOrder[currentIndex]
+
+  if (!expectedPlayerId) {
+    throw new Error('No more players expected to submit')
+  }
+
+  if (playerId !== expectedPlayerId) {
+    throw new Error("It's not this player's turn")
+  }
+
+  const newDescription: PlayerDescription = {
+    playerId,
+    text: text.trim(),
+  }
+
+  const updatedDescriptions = room.descriptions.concat(newDescription)
+
+  return {
+    ...room,
+    descriptions: updatedDescriptions,
+  }
 }
 
 export function submitRoundDecision(
