@@ -1,5 +1,6 @@
 import type { PlayerGameData, PublicGameRoom } from '@impostor/types'
 import { useEffect, useState } from 'react'
+import GameScreen from './components/GameScreen'
 import LandingPage from './components/LandingPage'
 import Lobby from './components/Lobby'
 import { socket } from './socket/socket'
@@ -40,6 +41,14 @@ export default function App() {
     socket.emit('startGame', { roomId })
   }
 
+  function onSubmitDescription(roomId: string, text: string) {
+    socket.emit('submitDescription', { roomId, text })
+  }
+
+  function onSubmitDecision(roomId: string, choice: 'skip' | 'vote') {
+    socket.emit('submitDecision', { roomId, choice })
+  }
+
   switch (room?.stage ?? 'landing') {
     case 'landing':
       return <LandingPage onCreateRoom={onCreateRoom} onJoinRoom={onJoinRoom} />
@@ -48,7 +57,16 @@ export default function App() {
 
       return <Lobby room={room} playerId={playerId} onStartGame={onStartGame} />
     case 'playing':
-      return <div>GameScreen</div>
+      if (!room || !playerId || !playerData) return null
+      return (
+        <GameScreen
+          playerId={playerId}
+          playerData={playerData}
+          room={room}
+          onSubmitDescription={onSubmitDescription}
+          onSubmitDecision={onSubmitDecision}
+        />
+      )
     case 'voting':
       return <div>VotingScreen</div>
     case 'results':
