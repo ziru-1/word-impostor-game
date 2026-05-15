@@ -40,6 +40,7 @@ export interface GameRoom {
 
   descriptionOrder: string[]
   descriptions: PlayerDescription[]
+  allDescriptions: PlayerDescription[][]
 
   roundDecisions: RoundDecision[]
   votes: Vote[]

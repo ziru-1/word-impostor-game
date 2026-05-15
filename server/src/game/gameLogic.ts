@@ -37,8 +37,9 @@ export function startGame(room: GameRoom, requesterId: string): GameRoom {
     sharedWord: wordPair.sharedWord,
     fakeWord: wordPair.fakeWord,
 
-    descriptions: [],
     descriptionOrder,
+    descriptions: [],
+    allDescriptions: [],
 
     votes: [],
     roundDecisions: [],
@@ -119,9 +120,14 @@ export function submitRoundDecision(
   const majorityVote = voteCount > skipCount
   const isFinalRound = room.roundNumber === 3
 
+  const updatedAllDescriptions = room.allDescriptions.concat([
+    room.descriptions,
+  ])
+
   if (majorityVote || isFinalRound) {
     return {
       ...room,
+      allDescriptions: updatedAllDescriptions,
       roundDecisions: updatedRoundDecision,
       stage: 'voting',
     }
@@ -130,6 +136,8 @@ export function submitRoundDecision(
   return {
     ...room,
     roundNumber: room.roundNumber + 1,
+    descriptions: [],
+    allDescriptions: updatedAllDescriptions,
     roundDecisions: [],
   }
 }
