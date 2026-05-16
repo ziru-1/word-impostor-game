@@ -74,6 +74,37 @@ const GameScreen = ({
           </button>
         </div>
       )}
+
+      {room.allDescriptions.length > 0 && (
+        <div>
+          <h3>Previous Descriptions</h3>
+
+          {room.allDescriptions
+            .slice(0, room.roundNumber - 1)
+            .map((roundDescriptions, index) => (
+              <div key={index}>
+                <h4>Round {index + 1}</h4>
+
+                <ul>
+                  {room.descriptionOrder.map((id) => {
+                    const player = room.players.find((p) => p.id === id)
+
+                    const description = roundDescriptions.find(
+                      (d) => d.playerId === id,
+                    )
+
+                    return (
+                      <li key={id}>
+                        <strong>{player?.name}:</strong>{' '}
+                        {description?.text ?? 'No description'}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   )
 }
