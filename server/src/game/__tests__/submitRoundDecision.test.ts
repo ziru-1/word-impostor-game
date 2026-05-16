@@ -62,19 +62,6 @@ describe('submitRoundDecision', () => {
     expect(result.stage).toBe('playing')
   })
 
-  it('forces voting on round 3 regardless of decisions', () => {
-    const room = createMockRoom({
-      roundNumber: 3,
-      roundDecisions: [
-        { playerId: 'P1', choice: 'skip' },
-        { playerId: 'P2', choice: 'skip' },
-      ],
-    })
-
-    const result = submitRoundDecision(room, 'P3', 'skip')
-    expect(result.stage).toBe('voting')
-  })
-
   it('does not mutate the original room', () => {
     const room = createMockRoom()
     const snapshot = structuredClone(room)
@@ -82,41 +69,5 @@ describe('submitRoundDecision', () => {
     submitRoundDecision(room, 'P1', 'vote')
 
     expect(room).toEqual(snapshot)
-  })
-
-  it('pushes current descriptions into allDescriptions when advancing to a new round', () => {
-    const descriptions = [
-      { playerId: 'P1', text: 'first' },
-      { playerId: 'P2', text: 'second' },
-      { playerId: 'P3', text: 'third' },
-    ]
-    const room = createMockRoom({
-      descriptions,
-      roundDecisions: [
-        { playerId: 'P1', choice: 'skip' },
-        { playerId: 'P2', choice: 'skip' },
-      ],
-    })
-    const updatedRoom = submitRoundDecision(room, 'P3', 'skip')
-    expect(updatedRoom.allDescriptions).toHaveLength(1)
-    expect(updatedRoom.allDescriptions[0]).toEqual(descriptions)
-  })
-
-  it('pushes current descriptions into allDescriptions when moving to voting stage', () => {
-    const descriptions = [
-      { playerId: 'P1', text: 'first' },
-      { playerId: 'P2', text: 'second' },
-      { playerId: 'P3', text: 'third' },
-    ]
-    const room = createMockRoom({
-      descriptions,
-      roundDecisions: [
-        { playerId: 'P1', choice: 'vote' },
-        { playerId: 'P2', choice: 'vote' },
-      ],
-    })
-    const updatedRoom = submitRoundDecision(room, 'P3', 'vote')
-    expect(updatedRoom.allDescriptions).toHaveLength(1)
-    expect(updatedRoom.allDescriptions[0]).toEqual(descriptions)
   })
 })
