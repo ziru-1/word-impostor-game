@@ -45,7 +45,7 @@ const GameScreen = ({
           })}
         </ul>
       </div>
-      {playerId === currentPlayerTurnId && (
+      {playerId === currentPlayerTurnId && !allPlayersDescribed && (
         <div>
           <input
             type='text'
