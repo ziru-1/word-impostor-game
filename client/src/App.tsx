@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import GameScreen from './components/GameScreen'
 import LandingPage from './components/LandingPage'
 import Lobby from './components/Lobby'
+import VotingScreen from './components/VotingScreen'
 import { socket } from './socket/socket'
 
 export default function App() {
@@ -49,6 +50,10 @@ export default function App() {
     socket.emit('submitDecision', { roomId, choice })
   }
 
+  function onCastVote(roomId: string, targetId: string) {
+    socket.emit('castVote', { roomId, targetId })
+  }
+
   switch (room?.stage ?? 'landing') {
     case 'landing':
       return <LandingPage onCreateRoom={onCreateRoom} onJoinRoom={onJoinRoom} />
@@ -68,7 +73,10 @@ export default function App() {
         />
       )
     case 'voting':
-      return <div>VotingScreen</div>
+      if (!room || !playerId) return null
+      return (
+        <VotingScreen playerId={playerId} room={room} onCastVote={onCastVote} />
+      )
     case 'results':
       return <div>ResultsScreen</div>
   }
