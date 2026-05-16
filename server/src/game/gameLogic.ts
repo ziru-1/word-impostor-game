@@ -47,6 +47,30 @@ export function startGame(room: GameRoom, requesterId: string): GameRoom {
   }
 }
 
+export function checkDescriptionPhaseEnd(room: GameRoom): GameRoom {
+  const allPlayersDescribed =
+    room.descriptions.length === room.descriptionOrder.length
+  const isFinalRound = room.roundNumber === 3
+
+  if (allPlayersDescribed) {
+    if (isFinalRound) {
+      return {
+        ...room,
+        allDescriptions: room.allDescriptions.concat([room.descriptions]),
+        stage: 'voting',
+      }
+    } else {
+      return {
+        ...room,
+        allDescriptions: room.allDescriptions.concat([room.descriptions]),
+        descriptions: [],
+      }
+    }
+  }
+
+  return room
+}
+
 export function submitDescription(
   room: GameRoom,
   playerId: string,
@@ -118,16 +142,10 @@ export function submitRoundDecision(
   }
 
   const majorityVote = voteCount > skipCount
-  const isFinalRound = room.roundNumber === 3
 
-  const updatedAllDescriptions = room.allDescriptions.concat([
-    room.descriptions,
-  ])
-
-  if (majorityVote || isFinalRound) {
+  if (majorityVote) {
     return {
       ...room,
-      allDescriptions: updatedAllDescriptions,
       roundDecisions: updatedRoundDecision,
       stage: 'voting',
     }
@@ -137,7 +155,6 @@ export function submitRoundDecision(
     ...room,
     roundNumber: room.roundNumber + 1,
     descriptions: [],
-    allDescriptions: updatedAllDescriptions,
     roundDecisions: [],
   }
 }

@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io'
 import {
   castVote,
+  checkDescriptionPhaseEnd,
   startGame,
   submitDescription,
   submitRoundDecision,
@@ -106,7 +107,9 @@ export function setupSocketHandler(io: Server) {
         const room = getRoom(data.roomId)
 
         const updatedRoom = updateRoom(
-          submitDescription(room, socket.id, data.text),
+          checkDescriptionPhaseEnd(
+            submitDescription(room, socket.id, data.text),
+          ),
         )
 
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedRoom))
