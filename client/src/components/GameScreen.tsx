@@ -18,8 +18,10 @@ const GameScreen = ({
 }: Props) => {
   const [text, setText] = useState('')
   const currentPlayerTurnId = room.descriptionOrder[room.descriptions.length]
-  const allPlayersDescribed =
-    room.descriptions.length === room.descriptionOrder.length
+  const allPlayersDescribed = room.allDescriptions.length === room.roundNumber
+  const currentDescriptions = allPlayersDescribed
+    ? room.allDescriptions[room.roundNumber - 1]
+    : room.descriptions
 
   return (
     <div>
@@ -36,7 +38,10 @@ const GameScreen = ({
         <ul>
           {room.descriptionOrder.map((id) => {
             const player = room.players.find((p) => p.id === id)
-            const description = room.descriptions.find((d) => d.playerId === id)
+
+            const description = currentDescriptions.find(
+              (d) => d.playerId === id,
+            )
             return (
               <li key={id}>
                 {player?.name} {description?.text}
@@ -63,6 +68,7 @@ const GameScreen = ({
           </button>
         </div>
       )}
+
       {allPlayersDescribed && (
         <div>
           <button onClick={() => onSubmitDecision(room.id, 'vote')}>
