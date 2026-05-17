@@ -9,7 +9,12 @@ interface Props {
 const Lobby = ({ room, playerId, onStartGame }: Props) => {
   return (
     <div>
-      <p>Room Code: {room.id}</p>
+      <p>
+        Room Code: {room.id}{' '}
+        <button onClick={() => navigator.clipboard.writeText(room.id)}>
+          Copy
+        </button>
+      </p>
       <div>
         <p>Players: </p>
         <ul>
