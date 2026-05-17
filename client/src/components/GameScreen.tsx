@@ -81,7 +81,7 @@ const GameScreen = ({
         </div>
       )}
 
-      {room.allDescriptions.length > 0 && (
+      {room.allDescriptions.slice(0, room.roundNumber - 1).length > 0 && (
         <div>
           <h3>Previous Descriptions</h3>
 
