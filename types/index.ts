@@ -12,6 +12,12 @@ export interface PlayerGameData {
   isImpostor: boolean
 }
 
+export interface GameReveal {
+  impostorId: Player['id']
+  sharedWord: string
+  fakeWord: string
+}
+
 export type GameStage = 'lobby' | 'playing' | 'voting' | 'results'
 
 export interface Vote {

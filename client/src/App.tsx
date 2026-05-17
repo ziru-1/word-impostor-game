@@ -1,8 +1,13 @@
-import type { PlayerGameData, PublicGameRoom } from '@impostor/types'
+import type {
+  GameReveal,
+  PlayerGameData,
+  PublicGameRoom,
+} from '@impostor/types'
 import { useEffect, useState } from 'react'
 import GameScreen from './components/GameScreen'
 import LandingPage from './components/LandingPage'
 import Lobby from './components/Lobby'
+import ResultsScreen from './components/ResultsScreen'
 import VotingScreen from './components/VotingScreen'
 import { socket } from './socket/socket'
 
@@ -10,6 +15,7 @@ export default function App() {
   const [room, setRoom] = useState<PublicGameRoom | null>(null)
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [playerData, setPlayerData] = useState<PlayerGameData | null>(null)
+  const [reveal, setReveal] = useState<GameReveal | null>(null)
 
   useEffect(() => {
     socket.on('connect', () => setPlayerId(socket.id ?? null))
@@ -18,12 +24,16 @@ export default function App() {
     socket.on('playerGameData', (playerData: PlayerGameData) =>
       setPlayerData(playerData),
     )
+    socket.on('gameReveal', (gameRevealData: GameReveal) =>
+      setReveal(gameRevealData),
+    )
 
     return () => {
       socket.off('connect')
       socket.off('roomCreated')
       socket.off('roomUpdated')
       socket.off('playerGameData')
+      socket.off('gameReveal')
       socket.disconnect()
     }
   }, [])
@@ -78,6 +88,7 @@ export default function App() {
         <VotingScreen playerId={playerId} room={room} onCastVote={onCastVote} />
       )
     case 'results':
-      return <div>ResultsScreen</div>
+      if (!room || !reveal) return null
+      return <ResultsScreen room={room} reveal={reveal} />
   }
 }

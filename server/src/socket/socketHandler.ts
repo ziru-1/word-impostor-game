@@ -138,7 +138,19 @@ export function setupSocketHandler(io: Server) {
         const updatedGameRoom = updateRoom(
           castVote(room, socket.id, data.targetId),
         )
+
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
+
+        if (updatedGameRoom.stage === 'results') {
+          const impostor = updatedGameRoom.players.find((p) => p.isImpostor)
+          if (!impostor) throw new Error('No impostor found')
+
+          io.to(room.id).emit('gameReveal', {
+            impostorId: impostor.id,
+            sharedWord: updatedGameRoom.sharedWord,
+            fakeWord: updatedGameRoom.fakeWord,
+          })
+        }
       } catch (error) {
         handleError(socket, error)
       }
