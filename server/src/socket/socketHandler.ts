@@ -5,6 +5,7 @@ import {
   PlayAgainPayload,
   Player,
   PlayerDescriptionPayload,
+  SendMessagePayload,
   StartGamePayload,
   SubmitDecisionPayload,
 } from '@impostor/types'
@@ -12,6 +13,7 @@ import { Server, Socket } from 'socket.io'
 import {
   castVote,
   checkDescriptionPhaseEnd,
+  sendMessage,
   startGame,
   submitDescription,
   submitPlayAgain,
@@ -163,6 +165,20 @@ export function setupSocketHandler(io: Server) {
         const room = getRoom(data.roomId)
 
         const updatedGameRoom = updateRoom(submitPlayAgain(room, socket.id))
+
+        io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
+      } catch (error) {
+        handleError(socket, error)
+      }
+    })
+
+    socket.on('sendMessage', (data: SendMessagePayload) => {
+      try {
+        const room = getRoom(data.roomId)
+
+        const updatedGameRoom = updateRoom(
+          sendMessage(room, socket.id, data.message),
+        )
 
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
       } catch (error) {

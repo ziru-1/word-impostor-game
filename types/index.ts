@@ -9,6 +9,12 @@ export interface Player {
 
 export type PublicPlayer = Omit<Player, 'word' | 'isImpostor'>
 
+export interface ChatMessage {
+  playerId: PlayerId
+  playerName: string
+  message: string
+}
+
 export interface PlayerGameData {
   word: string
   isImpostor: boolean
@@ -42,6 +48,7 @@ export interface GameRoom {
   hostId: PlayerId
 
   players: Player[]
+  chatMessages: ChatMessage[]
 
   stage: GameStage
   roundNumber: number
@@ -75,6 +82,11 @@ export interface CreateRoomPayload {
 export interface JoinRoomPayload {
   name: string
   roomId: string
+}
+
+export interface SendMessagePayload {
+  roomId: string
+  message: string
 }
 
 export interface StartGamePayload {

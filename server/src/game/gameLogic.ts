@@ -239,3 +239,29 @@ export function submitPlayAgain(room: GameRoom, playerId: string): GameRoom {
     playAgainPlayerIds: updatedPlayAgainPlayerIds,
   }
 }
+
+export function sendMessage(
+  room: GameRoom,
+  senderId: string,
+  message: string,
+): GameRoom {
+  const player = room.players.find((p) => p.id === senderId)
+  if (!player) throw new Error('Sender is not a player in this room')
+
+  if (!message || message.trim() === '') {
+    throw new Error('Message cannot be empty')
+  }
+
+  const newMessage = {
+    playerId: senderId,
+    playerName: player.name,
+    message: message.trim(),
+  }
+
+  const updatedMessages = room.chatMessages.concat(newMessage)
+
+  return {
+    ...room,
+    chatMessages: updatedMessages,
+  }
+}
