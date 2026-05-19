@@ -29,13 +29,18 @@ export function createRoom(hostPlayer: Player): GameRoom {
     id: Math.random().toString(36).slice(2, 7).toUpperCase(),
     hostId: hostPlayer.id,
     players: [hostPlayer],
+    chatMessages: [],
+    stage: 'lobby',
     roundNumber: 1,
-    votes: [],
+    descriptionOrder: [],
+    descriptions: [],
+    allDescriptions: [],
     roundDecisions: [],
+    votes: [],
     sharedWord: '',
     fakeWord: '',
-    stage: 'lobby',
     votedOutPlayerId: null,
+    playAgainPlayerIds: [],
   }
 
   rooms.set(room.id, room)
