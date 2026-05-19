@@ -44,6 +44,7 @@ export function startGame(room: GameRoom, requesterId: string): GameRoom {
     votes: [],
     roundDecisions: [],
     votedOutPlayerId: null,
+    playAgainPlayerIds: [],
   }
 }
 
@@ -215,5 +216,26 @@ export function castVote(
     votes: updatedVotes,
     votedOutPlayerId,
     stage: 'results',
+  }
+}
+
+export function submitPlayAgain(room: GameRoom, playerId: string): GameRoom {
+  if (room.stage !== 'results') throw new Error('Game stage must be in results')
+
+  if (room.playAgainPlayerIds.includes(playerId))
+    throw new Error('Player has already played again')
+
+  const updatedPlayAgainPlayerIds = room.playAgainPlayerIds.concat(playerId)
+
+  if (updatedPlayAgainPlayerIds.length === room.players.length) {
+    return {
+      ...room,
+      stage: 'lobby',
+    }
+  }
+
+  return {
+    ...room,
+    playAgainPlayerIds: updatedPlayAgainPlayerIds,
   }
 }

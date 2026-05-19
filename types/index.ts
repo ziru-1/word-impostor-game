@@ -55,6 +55,8 @@ export interface GameRoom {
   fakeWord: string
 
   votedOutPlayerId: string | null
+
+  playAgainPlayerIds: string[]
 }
 
 export type PublicGameRoom = Omit<
@@ -90,4 +92,8 @@ export interface CastVotePayload {
 export interface PlayerDescriptionPayload {
   roomId: string
   text: string
+}
+
+export interface PlayAgainPayload {
+  roomId: string
 }

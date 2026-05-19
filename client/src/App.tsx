@@ -64,6 +64,10 @@ export default function App() {
     socket.emit('castVote', { roomId, targetId })
   }
 
+  function onPlayAgain(roomId: string) {
+    socket.emit('playAgain', { roomId })
+  }
+
   switch (room?.stage ?? 'landing') {
     case 'landing':
       return <LandingPage onCreateRoom={onCreateRoom} onJoinRoom={onJoinRoom} />
@@ -88,7 +92,14 @@ export default function App() {
         <VotingScreen playerId={playerId} room={room} onCastVote={onCastVote} />
       )
     case 'results':
-      if (!room || !reveal) return null
-      return <ResultsScreen room={room} reveal={reveal} />
+      if (!room || !playerId || !reveal) return null
+      return (
+        <ResultsScreen
+          room={room}
+          playerId={playerId}
+          reveal={reveal}
+          onPlayAgain={onPlayAgain}
+        />
+      )
   }
 }

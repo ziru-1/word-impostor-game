@@ -2,6 +2,7 @@ import {
   CastVotePayload,
   CreateRoomPayload,
   JoinRoomPayload,
+  PlayAgainPayload,
   Player,
   PlayerDescriptionPayload,
   StartGamePayload,
@@ -13,6 +14,7 @@ import {
   checkDescriptionPhaseEnd,
   startGame,
   submitDescription,
+  submitPlayAgain,
   submitRoundDecision,
 } from '../game/gameLogic'
 import {
@@ -151,6 +153,18 @@ export function setupSocketHandler(io: Server) {
             fakeWord: updatedGameRoom.fakeWord,
           })
         }
+      } catch (error) {
+        handleError(socket, error)
+      }
+    })
+
+    socket.on('playAgain', (data: PlayAgainPayload) => {
+      try {
+        const room = getRoom(data.roomId)
+
+        const updatedGameRoom = updateRoom(submitPlayAgain(room, socket.id))
+
+        io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
       } catch (error) {
         handleError(socket, error)
       }

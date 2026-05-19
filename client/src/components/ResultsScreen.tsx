@@ -2,16 +2,19 @@ import type { GameReveal, PublicGameRoom } from '@impostor/types'
 
 interface Props {
   room: PublicGameRoom
+  playerId: string
   reveal: GameReveal
+  onPlayAgain: (roomId: string) => void
 }
 
-const ResultsScreen = ({ room, reveal }: Props) => {
+const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
   const votedOutPlayer = room.players.find(
     (player) => player.id === room.votedOutPlayerId,
   )
   const impostor = room.players.find(
     (player) => player.id === reveal.impostorId,
   )
+  const playerHasPlayedAgain = room.playAgainPlayerIds.includes(playerId)
   return (
     <div>
       <div>
@@ -38,6 +41,19 @@ const ResultsScreen = ({ room, reveal }: Props) => {
         <h3>
           IMPOSTOR {votedOutPlayer?.id === impostor?.id ? 'LOSES' : 'WINS'}
         </h3>
+
+        <div>
+          <p>
+            <strong>{room.playAgainPlayerIds.length}</strong> out of{' '}
+            <strong>{room.players.length}</strong> have played again
+          </p>
+          <button
+            disabled={playerHasPlayedAgain}
+            onClick={() => onPlayAgain(room.id)}
+          >
+            Play Again
+          </button>
+        </div>
       </div>
       {room.allDescriptions.map((roundDescriptions, index) => (
         <div key={index}>
