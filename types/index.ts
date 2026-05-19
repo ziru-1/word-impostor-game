@@ -1,5 +1,7 @@
+export type PlayerId = string
+
 export interface Player {
-  id: string
+  id: PlayerId
   name: string
   word: string
   isImpostor: boolean
@@ -13,7 +15,7 @@ export interface PlayerGameData {
 }
 
 export interface GameReveal {
-  impostorId: Player['id']
+  impostorId: PlayerId
   sharedWord: string
   fakeWord: string
 }
@@ -21,30 +23,30 @@ export interface GameReveal {
 export type GameStage = 'lobby' | 'playing' | 'voting' | 'results'
 
 export interface Vote {
-  voterId: Player['id']
-  targetId: Player['id']
+  voterId: PlayerId
+  targetId: PlayerId
 }
 
 export interface RoundDecision {
-  playerId: Player['id']
+  playerId: PlayerId
   choice: 'skip' | 'vote'
 }
 
 export interface PlayerDescription {
-  playerId: Player['id']
+  playerId: PlayerId
   text: string
 }
 
 export interface GameRoom {
   id: string
-  hostId: string
+  hostId: PlayerId
 
   players: Player[]
 
   stage: GameStage
   roundNumber: number
 
-  descriptionOrder: string[]
+  descriptionOrder: PlayerId[]
   descriptions: PlayerDescription[]
   allDescriptions: PlayerDescription[][]
 
@@ -54,9 +56,9 @@ export interface GameRoom {
   sharedWord: string
   fakeWord: string
 
-  votedOutPlayerId: string | null
+  votedOutPlayerId: PlayerId | null
 
-  playAgainPlayerIds: string[]
+  playAgainPlayerIds: PlayerId[]
 }
 
 export type PublicGameRoom = Omit<
@@ -86,7 +88,7 @@ export interface SubmitDecisionPayload {
 
 export interface CastVotePayload {
   roomId: string
-  targetId: string
+  targetId: PlayerId
 }
 
 export interface PlayerDescriptionPayload {
