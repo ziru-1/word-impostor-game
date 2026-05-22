@@ -4,6 +4,7 @@ import type {
   PublicGameRoom,
 } from '@impostor/types'
 import { useEffect, useState } from 'react'
+import Chat from './components/Chat'
 import GameScreen from './components/GameScreen'
 import LandingPage from './components/LandingPage'
 import Lobby from './components/Lobby'
@@ -68,38 +69,59 @@ export default function App() {
     socket.emit('playAgain', { roomId })
   }
 
-  switch (room?.stage ?? 'landing') {
-    case 'landing':
-      return <LandingPage onCreateRoom={onCreateRoom} onJoinRoom={onJoinRoom} />
-    case 'lobby':
-      if (!room || !playerId) return null
-
-      return <Lobby room={room} playerId={playerId} onStartGame={onStartGame} />
-    case 'playing':
-      if (!room || !playerId || !playerData) return null
-      return (
-        <GameScreen
-          playerId={playerId}
-          playerData={playerData}
-          room={room}
-          onSubmitDescription={onSubmitDescription}
-          onSubmitDecision={onSubmitDecision}
-        />
-      )
-    case 'voting':
-      if (!room || !playerId) return null
-      return (
-        <VotingScreen playerId={playerId} room={room} onCastVote={onCastVote} />
-      )
-    case 'results':
-      if (!room || !playerId || !reveal) return null
-      return (
-        <ResultsScreen
-          room={room}
-          playerId={playerId}
-          reveal={reveal}
-          onPlayAgain={onPlayAgain}
-        />
-      )
+  function onSendMessage(roomId: string, message: string) {
+    socket.emit('sendMessage', { roomId, message })
   }
+
+  const renderStage = () => {
+    const stage = room?.stage ?? 'landing'
+
+    switch (stage) {
+      case 'landing':
+        return (
+          <LandingPage onCreateRoom={onCreateRoom} onJoinRoom={onJoinRoom} />
+        )
+      case 'lobby':
+        return room && playerId ? (
+          <Lobby room={room} playerId={playerId} onStartGame={onStartGame} />
+        ) : null
+      case 'playing':
+        return room && playerId && playerData ? (
+          <GameScreen
+            playerId={playerId}
+            playerData={playerData}
+            room={room}
+            onSubmitDescription={onSubmitDescription}
+            onSubmitDecision={onSubmitDecision}
+          />
+        ) : null
+      case 'voting':
+        return room && playerId ? (
+          <VotingScreen
+            playerId={playerId}
+            room={room}
+            onCastVote={onCastVote}
+          />
+        ) : null
+      case 'results':
+        return room && playerId && reveal ? (
+          <ResultsScreen
+            room={room}
+            playerId={playerId}
+            reveal={reveal}
+            onPlayAgain={onPlayAgain}
+          />
+        ) : null
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div>
+      {renderStage()}
+
+      {room !== null && <Chat room={room} onSendMessage={onSendMessage} />}
+    </div>
+  )
 }
