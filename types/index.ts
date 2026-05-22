@@ -12,7 +12,7 @@ export type PublicPlayer = Omit<Player, 'word' | 'isImpostor'>
 export interface ChatMessage {
   playerId: PlayerId
   playerName: string
-  message: string
+  text: string
 }
 
 export interface PlayerGameData {

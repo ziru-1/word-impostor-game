@@ -255,7 +255,7 @@ export function sendMessage(
   const newMessage = {
     playerId: senderId,
     playerName: player.name,
-    message: message.trim(),
+    text: message.trim(),
   }
 
   const updatedMessages = room.chatMessages.concat(newMessage)

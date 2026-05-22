@@ -26,13 +26,13 @@ describe('sendMessage', () => {
     const room = createMockRoom()
     const updatedRoom = sendMessage(room, 'P1', 'hello')
     expect(updatedRoom.chatMessages).toHaveLength(1)
-    expect(updatedRoom.chatMessages[0].message).toBe('hello')
+    expect(updatedRoom.chatMessages[0].text).toBe('hello')
   })
 
   it('trims leading and trailing whitespace from the message', () => {
     const room = createMockRoom()
     const updatedRoom = sendMessage(room, 'P1', '  hello  ')
-    expect(updatedRoom.chatMessages[0].message).toBe('hello')
+    expect(updatedRoom.chatMessages[0].text).toBe('hello')
   })
 
   it('assigns the correct playerId and playerName to the message', () => {
