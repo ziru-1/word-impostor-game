@@ -14,6 +14,10 @@ const port = 3001
 
 setupSocketHandler(io)
 
+app.get('/', (req, res) => {
+  res.send('OK')
+})
+
 server.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
