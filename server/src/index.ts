@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from 'express'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
@@ -6,9 +7,7 @@ import { setupSocketHandler } from './socket/socketHandler'
 const app = express()
 const server = createServer(app)
 const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:5173',
-  },
+  cors: { origin: process.env.CLIENT_URL ?? 'http://localhost:5173' },
 })
 
 const port = 3001
