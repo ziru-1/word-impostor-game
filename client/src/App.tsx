@@ -3,12 +3,13 @@ import type {
   PlayerGameData,
   PublicGameRoom,
 } from '@impostor/types'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Chat from './components/Chat'
 import GameScreen from './components/GameScreen'
 import LandingPage from './components/LandingPage'
 import Lobby from './components/Lobby'
 import ResultsScreen from './components/ResultsScreen'
+import Toast from './components/Toast'
 import VotingScreen from './components/VotingScreen'
 import { socket } from './socket/socket'
 
@@ -17,6 +18,9 @@ export default function App() {
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [playerData, setPlayerData] = useState<PlayerGameData | null>(null)
   const [reveal, setReveal] = useState<GameReveal | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     socket.on('connect', () => setPlayerId(socket.id ?? null))
@@ -28,6 +32,11 @@ export default function App() {
     socket.on('gameReveal', (gameRevealData: GameReveal) =>
       setReveal(gameRevealData),
     )
+    socket.on('error', (error: string) => {
+      setErrorMessage(error || 'An unexpected error occurred')
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
+      toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 3000)
+    })
 
     return () => {
       socket.off('connect')
@@ -35,7 +44,10 @@ export default function App() {
       socket.off('roomUpdated')
       socket.off('playerGameData')
       socket.off('gameReveal')
+      socket.off('error')
       socket.disconnect()
+
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
     }
   }, [])
 
@@ -119,6 +131,8 @@ export default function App() {
 
   return (
     <div>
+      <Toast errorMessage={errorMessage} />
+
       {renderStage()}
 
       {room !== null && <Chat room={room} onSendMessage={onSendMessage} />}
