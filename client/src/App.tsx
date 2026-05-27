@@ -4,6 +4,7 @@ import type {
   PublicGameRoom,
 } from '@impostor/types'
 import { useEffect, useRef, useState } from 'react'
+import styles from './App.module.css'
 import Chat from './components/Chat'
 import GameScreen from './components/GameScreen'
 import LandingPage from './components/LandingPage'
@@ -130,11 +131,9 @@ export default function App() {
   }
 
   return (
-    <div>
+    <div className={styles.app}>
       <Toast errorMessage={errorMessage} />
-
-      {renderStage()}
-
+      <main className={styles.main}>{renderStage()}</main>
       {room !== null && <Chat room={room} onSendMessage={onSendMessage} />}
     </div>
   )
