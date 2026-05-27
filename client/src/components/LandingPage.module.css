@@ -1,7 +1,9 @@
 /* ─── Layout ─────────────────────────────────────────────────────────────── */
 .page {
-  height: 100%; /* fill .main instead of 100vh */
-  overflow-y: auto; /* just in case on very short screens */
+  flex: 1; /* replaces height: 100% */
+  width: 100%; /* add this */
+  overflow-y: auto;
+  scrollbar-width: none;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,0 +1,171 @@
+/* ─── Chat Panel ─────────────────────────────────────────────────────────── */
+.chat {
+  /* mobile: fixed height strip at bottom */
+  height: clamp(200px, 38vh, 280px);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+  position: relative;
+  z-index: 1;
+}
+
+/* desktop: full-height sidebar on the right */
+@media (min-width: 768px) {
+  .chat {
+    flex: 0 0 20%;
+    height: 100%;
+    border-top: none;
+    border-left: 1px solid var(--c-border);
+  }
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--c-border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+}
+
+.onlineDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-green);
+  flex-shrink: 0;
+}
+
+/* ─── Messages ───────────────────────────────────────────────────────────── */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-surface-2) transparent;
+}
+
+.messages::-webkit-scrollbar {
+  width: 3px;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  background: var(--c-surface-2);
+  border-radius: 2px;
+}
+
+.empty {
+  color: var(--c-text-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin: auto;
+}
+
+/* ─── Message row ────────────────────────────────────────────────────────── */
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.message:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.messageName {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--c-text-muted);
+}
+
+.messageName.isYou {
+  color: var(--c-amber);
+}
+
+.messageText {
+  font-size: 13px;
+  color: var(--c-text);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ─── Input area ─────────────────────────────────────────────────────────── */
+.inputRow {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-top: 1px solid var(--c-border);
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color var(--transition);
+  min-width: 0;
+}
+
+.input::placeholder {
+  color: var(--c-text-dim);
+}
+
+.input:focus {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.sendBtn {
+  background: var(--c-surface-2);
+  color: var(--c-text-muted);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color var(--transition),
+    border-color var(--transition),
+    background var(--transition);
+}
+
+.sendBtn:hover {
+  color: var(--c-text);
+  border-color: var(--c-border-hover);
+  background: var(--c-bg);
+}
+
+.sendBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

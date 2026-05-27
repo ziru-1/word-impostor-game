@@ -133,8 +133,10 @@ export default function App() {
   return (
     <div className={styles.app}>
       <Toast errorMessage={errorMessage} />
-      <main className={styles.main}>{renderStage()}</main>
-      {room !== null && <Chat room={room} onSendMessage={onSendMessage} />}
+      {renderStage()}
+      {room !== null && playerId && (
+        <Chat room={room} playerId={playerId} onSendMessage={onSendMessage} />
+      )}
     </div>
   )
 }
