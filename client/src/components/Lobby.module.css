@@ -1,13 +1,27 @@
 /* ─── Layout ─────────────────────────────────────────────────────────────── */
 .page {
-  flex: 1; /* replaces height: 100% */
-  width: 100%; /* add this */
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   padding: clamp(1rem, 3vh, 2rem) 1.5rem;
-  position: relative;
+}
+
+.page::-webkit-scrollbar {
+  display: none;
+}
+
+/* inner wrapper: centers when space allows, scrolls from top when not */
+.inner {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */
@@ -72,7 +86,6 @@
 /* ─── Player List ─────────────────────────────────────────────────────────── */
 .section {
   width: 100%;
-  max-width: 380px;
   opacity: 0;
   animation: fadeUp 0.5s ease 0.2s forwards;
 }
@@ -86,17 +99,20 @@
   margin-bottom: 0.75rem;
 }
 
+/* mobile: single column */
 .playerList {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  max-height: 280px;
-  overflow-y: auto;
-  scrollbar-width: none;
 }
 
-.playerList::-webkit-scrollbar {
-  display: none;
+/* desktop: 2-column grid — all 8 players visible, no scroll */
+@media (min-width: 768px) {
+  .playerList {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
 }
 
 .playerRow {
@@ -137,6 +153,10 @@
   flex: 1;
   font-size: 14px;
   color: var(--c-text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .hostBadge {
@@ -146,6 +166,7 @@
   text-transform: uppercase;
   color: var(--c-amber);
   opacity: 0.7;
+  flex-shrink: 0;
 }
 
 .youBadge {
@@ -155,6 +176,7 @@
   text-transform: uppercase;
   color: var(--c-text-muted);
   opacity: 0.6;
+  flex-shrink: 0;
 }
 
 .playerRow.you {
@@ -165,7 +187,6 @@
 /* ─── Footer ─────────────────────────────────────────────────────────────── */
 .footer {
   width: 100%;
-  max-width: 380px;
   margin-top: clamp(1rem, 3vh, 1.75rem);
   opacity: 0;
   animation: fadeUp 0.5s ease 0.3s forwards;
@@ -234,7 +255,7 @@
   animation-delay: 0.4s;
 }
 
-/* ─── Minimum player hint ────────────────────────────────────────────────── */
+/* ─── Hint ───────────────────────────────────────────────────────────────── */
 .hint {
   font-family: var(--font-mono);
   font-size: 10px;
