@@ -174,7 +174,7 @@
   font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--c-text-muted);
+  color: var(--c-text);
   opacity: 0.6;
   flex-shrink: 0;
 }
