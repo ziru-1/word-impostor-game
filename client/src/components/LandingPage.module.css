@@ -1,18 +1,16 @@
 /* ─── Layout ─────────────────────────────────────────────────────────────── */
 .page {
-  flex: 1; /* replaces height: 100% */
-  width: 100%; /* add this */
-  overflow-y: auto;
-  scrollbar-width: none;
+  flex: 1;
+  width: 100%;
+  overflow: hidden; /* no scroll at all */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: clamp(1rem, 3vh, 2rem) 1.5rem;
+  padding: clamp(0.75rem, 2vh, 1.5rem) 1.5rem;
   position: relative;
 }
 
-/* Radial amber glow behind hero */
+/* Radial amber glow */
 .page::after {
   content: '';
   position: fixed;
@@ -29,10 +27,21 @@
   pointer-events: none;
 }
 
+/* inner: centers via auto margins */
+.inner {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
 .hero {
   text-align: center;
-  margin-bottom: clamp(1.25rem, 4vh, 3.5rem);
+  margin-bottom: clamp(0.75rem, 2.5vh, 2rem);
 }
 
 .eyebrow {
@@ -41,7 +50,7 @@
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--c-amber);
-  margin-bottom: clamp(0.4rem, 1.5vh, 1rem);
+  margin-bottom: clamp(0.25rem, 1vh, 0.6rem);
   opacity: 0;
   animation: fadeUp 0.6s ease 0.1s forwards;
 }
@@ -49,11 +58,12 @@
 .title {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: clamp(3rem, 10vw, 6rem);
+  /* smaller ceiling so it fits on desktop without scroll */
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
   line-height: 0.95;
   letter-spacing: -0.02em;
   color: var(--c-text);
-  margin-bottom: clamp(0.6rem, 2vh, 1.25rem);
+  margin-bottom: clamp(0.4rem, 1.5vh, 1rem);
   opacity: 0;
   animation: fadeUp 0.6s ease 0.2s forwards;
 }
@@ -66,24 +76,69 @@
 .tagline {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--c-text-muted);
-  max-width: 340px;
-  margin: 0 auto;
+  max-width: 320px;
+  margin: 0 auto clamp(0.5rem, 1.5vh, 0.9rem);
+  line-height: 1.55;
   opacity: 0;
   animation: fadeUp 0.6s ease 0.3s forwards;
+}
+
+/* ─── How to play ────────────────────────────────────────────────────────── */
+.howToPlayBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  color: var(--c-text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem 0.3rem 0.5rem;
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    border-color var(--transition),
+    background var(--transition);
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.35s forwards;
+}
+
+.howToPlayBtn:hover {
+  color: var(--c-text);
+  border-color: var(--c-border-hover);
+  background: var(--c-surface);
+}
+
+.howToPlayIcon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--c-amber-dim);
+  border: 1px solid rgba(212, 168, 67, 0.25);
+  color: var(--c-amber);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 /* ─── Card ───────────────────────────────────────────────────────────────── */
 .card {
   width: 100%;
-  max-width: 420px;
   opacity: 0;
   animation: fadeUp 0.6s ease 0.4s forwards;
 }
 
 .nameRow {
-  margin-bottom: clamp(0.75rem, 2.5vh, 1.75rem);
+  margin-bottom: clamp(0.6rem, 2vh, 1.25rem);
 }
 
 .label {
@@ -93,7 +148,7 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--c-text-muted);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .input {
@@ -104,7 +159,7 @@
   color: var(--c-text);
   font-family: var(--font-body);
   font-size: 15px;
-  padding: 0.75rem 1rem;
+  padding: 0.65rem 1rem;
   transition:
     border-color var(--transition),
     background var(--transition);
@@ -114,7 +169,6 @@
 .input::placeholder {
   color: var(--c-text-dim);
 }
-
 .input:focus {
   border-color: var(--c-amber);
   background: var(--c-surface-2);
@@ -125,7 +179,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin: clamp(0.75rem, 2.5vh, 1.75rem) 0;
+  margin: clamp(0.6rem, 2vh, 1.25rem) 0;
 }
 
 .dividerLine {
@@ -142,7 +196,7 @@
   white-space: nowrap;
 }
 
-/* ─── Actions ────────────────────────────────────────────────────────────── */
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
 .primaryBtn {
   width: 100%;
   background: var(--c-amber);
@@ -152,7 +206,7 @@
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 15px;
-  padding: 0.8rem 1.5rem;
+  padding: 0.7rem 1.5rem;
   cursor: pointer;
   transition:
     opacity var(--transition),
@@ -164,12 +218,10 @@
   opacity: 0.9;
   transform: translateY(-1px);
 }
-
 .primaryBtn:active {
   transform: translateY(0);
   opacity: 1;
 }
-
 .primaryBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -196,7 +248,7 @@
   font-family: var(--font-body);
   font-weight: 500;
   font-size: 15px;
-  padding: 0.8rem 1.25rem;
+  padding: 0.7rem 1.25rem;
   cursor: pointer;
   white-space: nowrap;
   transition:
@@ -210,11 +262,9 @@
   background: var(--c-surface-2);
   transform: translateY(-1px);
 }
-
 .secondaryBtn:active {
   transform: translateY(0);
 }
-
 .secondaryBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -223,13 +273,13 @@
 
 /* ─── Footer ─────────────────────────────────────────────────────────────── */
 .footer {
-  margin-top: clamp(1rem, 3vh, 3rem);
+  margin-top: clamp(0.6rem, 2vh, 1.5rem);
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--c-text-dim);
   letter-spacing: 0.1em;
   opacity: 0;
-  animation: fadeUp 0.6s ease 0.6s forwards;
+  animation: fadeUp 0.6s ease 0.55s forwards;
 }
 
 /* ─── Animations ─────────────────────────────────────────────────────────── */
