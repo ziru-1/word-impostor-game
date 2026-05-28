@@ -94,7 +94,7 @@ const VotingScreen = ({ playerId, room, onCastVote }: Props) => {
                     You
                   </span>
                 )}
-                {!isSelf && hasVoted && (
+                {hasVoted && (
                   <span className={`${styles.playerMeta} ${styles.voted}`}>
                     Voted
                   </span>

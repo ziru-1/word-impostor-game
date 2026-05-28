@@ -125,6 +125,10 @@
   border-color: rgba(201, 64, 64, 0.35);
 }
 
+.playerRow.selected .playerName {
+  color: var(--c-red);
+}
+
 .playerRow.isSelf {
   cursor: default;
   opacity: 0.5;
