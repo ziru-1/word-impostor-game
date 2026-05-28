@@ -504,6 +504,10 @@
   min-width: 0;
 }
 
+.voteChipName.isYou {
+  color: var(--c-amber);
+}
+
 .voteArrow {
   font-family: var(--font-mono);
   font-size: 13px;

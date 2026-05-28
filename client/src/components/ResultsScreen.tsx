@@ -200,8 +200,10 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
                 >
                   {getInitials(voter?.name ?? '?')}
                 </div>
-                <span className={styles.voteChipName}>
-                  {voterIsYou ? 'You' : voter?.name}
+                <span
+                  className={`${styles.voteChipName} ${voterIsYou ? styles.isYou : ''}`}
+                >
+                  {voterIsYou ? `${voter?.name} (You)` : voter?.name}
                 </span>
               </div>
 
