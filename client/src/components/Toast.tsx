@@ -1,10 +1,12 @@
+import styles from './Toast.module.css'
+
 interface Props {
   errorMessage: string | null
 }
 
 const Toast = ({ errorMessage }: Props) => {
   if (!errorMessage) return null
-  return <div style={{ background: 'red' }}>{errorMessage}</div>
+  return <div className={styles.toast}>{errorMessage}</div>
 }
 
 export default Toast
