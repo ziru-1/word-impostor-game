@@ -49,6 +49,11 @@ export function createRoom(hostPlayer: Player): GameRoom {
 
 export function joinRoom(roomId: string, player: Player): GameRoom {
   const room = getRoom(roomId)
+
+  if (room.players.length >= 8) {
+    throw new Error('Room is full')
+  }
+
   const updatedRoom = {
     ...room,
     players: [...room.players, player],
