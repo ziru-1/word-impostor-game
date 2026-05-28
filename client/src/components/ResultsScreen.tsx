@@ -26,8 +26,7 @@ function isTiedResult(room: PublicGameRoom, votedOutId: string | null) {
     counts[v.targetId] = (counts[v.targetId] ?? 0) + 1
   }
   const max = Math.max(...Object.values(counts))
-  const topPlayers = Object.entries(counts).filter(([, c]) => c === max)
-  return topPlayers.length > 1
+  return Object.values(counts).filter((c) => c === max).length > 1
 }
 
 const FLICKER_NAMES = [
@@ -59,6 +58,9 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
     isTie ? 'flickering' : 'done',
   )
   const [flickerName, setFlickerName] = useState<string>(FLICKER_NAMES[0])
+  // after tie resolves, flip this to trigger animateIn class
+  const [tieRevealed, setTieRevealed] = useState(false)
+  const [panelAnimated, setPanelAnimated] = useState(false)
   const flickerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
@@ -75,7 +77,10 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
       setFlickerPhase('settling')
       setFlickerName(votedOutPlayer?.name ?? '')
 
-      setTimeout(() => setFlickerPhase('done'), SETTLE_MS)
+      setTimeout(() => {
+        setFlickerPhase('done')
+        setTieRevealed(true)
+      }, SETTLE_MS)
     }, FLICKER_MS)
 
     return () => {
@@ -89,9 +94,17 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
     ? flickerName
     : (votedOutPlayer?.name ?? '—')
 
+  // For elements hidden during tie: hidden while animating, animateIn after resolved
+  function tieClass() {
+    if (!isTie) return '' // no tie — base CSS handles animation
+    if (isAnimating) return styles.hidden
+    if (tieRevealed) return styles.animateIn
+    return ''
+  }
+
   return (
     <div className={styles.page}>
-      {/* Hero — hidden during tie animation */}
+      {/* Hero */}
       <div className={styles.hero}>
         {isTie && isAnimating ? (
           <div className={styles.tieBanner}>
@@ -115,6 +128,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
 
       {/* Reveal cards */}
       <div className={styles.revealRow}>
+        {/* Voted out card — always visible */}
         <div
           className={`${styles.revealCard} ${!isAnimating ? (impostorCaught ? styles.match : styles.mismatch) : ''}`}
         >
@@ -137,8 +151,11 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
           )}
         </div>
 
-        <div className={styles.revealCard}>
-          <span className={styles.revealCardLabel}>Impostor was</span>
+        {/* Impostor card — hidden during tie animation */}
+        <div className={`${styles.revealCard} ${tieClass()}`}>
+          <span className={`${styles.revealCardLabel} ${styles.impostorLabel}`}>
+            Impostor was
+          </span>
           <span className={styles.revealCardName}>{impostor?.name ?? '—'}</span>
           <span
             className={styles.revealCardSub}
@@ -149,8 +166,8 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
         </div>
       </div>
 
-      {/* Words */}
-      <div className={styles.wordsRow}>
+      {/* Words — hidden during tie animation */}
+      <div className={`${styles.wordsRow} ${tieClass()}`}>
         <div className={styles.wordChip}>
           <span className={styles.wordChipLabel}>Shared word</span>
           <span className={styles.wordChipValue}>{reveal.sharedWord}</span>
@@ -163,8 +180,8 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className={styles.tabs}>
+      {/* Tabs — hidden during tie animation */}
+      <div className={`${styles.tabs} ${tieClass()}`}>
         <button
           className={`${styles.tab} ${tab === 'votes' ? styles.active : ''}`}
           onClick={() => setTab('votes')}
@@ -179,9 +196,10 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
         </button>
       </div>
 
-      {/* Votes panel */}
+      {/* Votes panel — hidden during tie, hidden when wrong tab */}
       <div
-        className={`${styles.panel} ${tab !== 'votes' ? styles.hidden : ''}`}
+        className={`${styles.panel} ${!panelAnimated ? styles.animateIn : ''} ${tab !== 'votes' || (isTie && isAnimating) ? styles.hidden : ''}`}
+        onAnimationEnd={() => setPanelAnimated(true)}
       >
         {room.votes.map((vote) => {
           const voter = room.players.find((p) => p.id === vote.voterId)
@@ -191,7 +209,6 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
 
           return (
             <div key={vote.voterId} className={styles.voteRow}>
-              {/* Voter chip */}
               <div
                 className={`${styles.voteChip} ${voterIsYou ? styles.isYou : ''}`}
               >
@@ -206,10 +223,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
                   {voterIsYou ? `${voter?.name} (You)` : voter?.name}
                 </span>
               </div>
-
               <span className={styles.voteArrow}>→</span>
-
-              {/* Target chip */}
               <div
                 className={`${styles.voteChip} ${targetWasImpostor ? styles.isImpostor : ''}`}
               >
@@ -218,16 +232,20 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
                 >
                   {getInitials(target?.name ?? '?')}
                 </div>
-                <span className={styles.voteChipName}>{target?.name}</span>
+                <span
+                  className={`${styles.voteChipName} ${targetWasImpostor ? styles.isImpostor : ''}`}
+                >
+                  {target?.name}
+                </span>
               </div>
             </div>
           )
         })}
       </div>
 
-      {/* Descriptions panel */}
+      {/* Descriptions panel — hidden during tie, hidden when wrong tab */}
       <div
-        className={`${styles.panel} ${tab !== 'descriptions' ? styles.hidden : ''}`}
+        className={`${styles.panel} ${!panelAnimated ? styles.animateIn : ''} ${tab !== 'descriptions' || (isTie && isAnimating) ? styles.hidden : ''}`}
       >
         {room.allDescriptions.map((roundDescriptions, index) => (
           <div key={index}>
@@ -253,7 +271,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
                         isImpostor ? styles.isImpostor : '',
                       ].join(' ')}
                     >
-                      {isYou ? 'You' : player?.name}
+                      {isYou ? `${player?.name} (You)` : player?.name}
                       {isImpostor ? ' (impostor)' : ''}
                     </span>
                     <span className={styles.descText}>

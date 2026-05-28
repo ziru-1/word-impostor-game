@@ -62,7 +62,7 @@
   gap: 0.2rem;
 }
 
-.revealCard .revealCardLabel {
+.revealCard .impostorLabel {
   color: var(--c-red);
 }
 
@@ -206,42 +206,6 @@
 .panel::-webkit-scrollbar-thumb {
   background: var(--c-surface-2);
   border-radius: 2px;
-}
-
-/* ─── Vote rows ──────────────────────────────────────────────────────────── */
-.voteRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.1rem 0;
-  font-size: 13px;
-  color: var(--c-text);
-}
-
-.voteName {
-  font-size: 13px;
-  color: var(--c-text-muted);
-}
-
-.voteName.isYou {
-  color: var(--c-amber);
-}
-
-.voteArrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--c-text-dim);
-  flex-shrink: 0;
-}
-
-.voteTarget {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--c-text);
-}
-
-.voteTarget.wasImpostor {
-  color: var(--c-red);
 }
 
 /* ─── Description rows ───────────────────────────────────────────────────── */
@@ -443,6 +407,12 @@
 }
 
 /* ─── Vote row — two chips with arrow ───────────────────────────────────── */
+.voteRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.1rem 0;
+}
 
 .voteChip {
   flex: 1;
@@ -508,6 +478,10 @@
   color: var(--c-amber);
 }
 
+.voteChipName.isImpostor {
+  color: var(--c-red);
+}
+
 .voteArrow {
   font-family: var(--font-mono);
   font-size: 13px;
@@ -535,4 +509,15 @@
   50% {
     opacity: 1;
   }
+}
+
+/* ─── Hidden (used during tie animation) ─────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+
+/* Applied to elements after tie animation resolves, and to panels on first mount */
+.animateIn {
+  opacity: 0;
+  animation: fadeUp 0.5s ease forwards;
 }
