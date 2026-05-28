@@ -1,0 +1,539 @@
+/* ─── Layout ─────────────────────────────────────────────────────────────── */
+.page {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(0.75rem, 2vh, 1.25rem) 1rem;
+  gap: clamp(0.6rem, 1.5vh, 1rem);
+}
+
+/* ─── Hero result ────────────────────────────────────────────────────────── */
+.hero {
+  flex-shrink: 0;
+  text-align: center;
+  opacity: 0;
+  animation: fadeUp 0.5s ease 0.1s forwards;
+}
+
+.resultLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+  margin-bottom: 0.3rem;
+}
+
+.resultText {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.resultText.impostorWins {
+  color: var(--c-red);
+}
+
+.resultText.impostorLoses {
+  color: var(--c-amber);
+}
+
+/* ─── Reveal cards ───────────────────────────────────────────────────────── */
+.revealRow {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 0.5s ease 0.2s forwards;
+}
+
+.revealCard {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.revealCard.match {
+  border-color: rgba(74, 158, 107, 0.3);
+  background: rgba(74, 158, 107, 0.06);
+}
+
+.revealCard.mismatch {
+  border-color: rgba(201, 64, 64, 0.25);
+  background: var(--c-red-dim);
+}
+
+.revealCardLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+}
+
+.revealCardName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.revealCardSub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.revealCardSub.correct {
+  color: var(--c-green);
+}
+.revealCardSub.wrong {
+  color: var(--c-red);
+  opacity: 0.8;
+}
+
+/* ─── Words row ──────────────────────────────────────────────────────────── */
+.wordsRow {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 0.5s ease 0.25s forwards;
+}
+
+.wordChip {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.wordChipLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+}
+
+.wordChipValue {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--c-amber);
+}
+
+.wordChipValue.fake {
+  color: var(--c-red);
+}
+
+/* ─── Tabs ───────────────────────────────────────────────────────────────── */
+.tabs {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.35rem;
+  opacity: 0;
+  animation: fadeUp 0.5s ease 0.3s forwards;
+}
+
+.tab {
+  flex: 1;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  color: var(--c-text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    background var(--transition),
+    border-color var(--transition);
+  text-align: center;
+}
+
+.tab.active {
+  background: var(--c-surface-2);
+  border-color: var(--c-border-hover);
+  color: var(--c-text);
+}
+
+/* ─── Panel ──────────────────────────────────────────────────────────────── */
+.panel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-surface-2) transparent;
+}
+
+.panel.hidden {
+  display: none;
+}
+
+.panel::-webkit-scrollbar {
+  width: 3px;
+}
+.panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.panel::-webkit-scrollbar-thumb {
+  background: var(--c-surface-2);
+  border-radius: 2px;
+}
+
+/* ─── Vote rows ──────────────────────────────────────────────────────────── */
+.voteRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--c-text);
+}
+
+.voteName {
+  font-size: 13px;
+  color: var(--c-text-muted);
+}
+
+.voteName.isYou {
+  color: var(--c-amber);
+}
+
+.voteArrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--c-text-dim);
+  flex-shrink: 0;
+}
+
+.voteTarget {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.voteTarget.wasImpostor {
+  color: var(--c-red);
+}
+
+/* ─── Description rows ───────────────────────────────────────────────────── */
+.roundHeader {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+  padding: 0.25rem 0;
+  margin-top: 0.25rem;
+}
+
+.roundHeader:first-child {
+  margin-top: 0;
+}
+
+.descRow {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  align-items: flex-start;
+}
+
+.descAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  flex-shrink: 0;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.descContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.descName {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--c-text-muted);
+}
+
+.descName.isYou {
+  color: var(--c-amber);
+}
+.descName.isImpostor {
+  color: var(--c-red);
+}
+
+.descText {
+  font-size: 13px;
+  color: var(--c-text);
+  line-height: 1.5;
+}
+
+/* ─── Play again footer ──────────────────────────────────────────────────── */
+.footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0;
+  animation: fadeUp 0.5s ease 0.4s forwards;
+}
+
+.playAgainBtn {
+  flex: 1;
+  background: var(--c-surface);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    transform var(--transition);
+}
+
+.playAgainBtn:hover {
+  border-color: var(--c-border-hover);
+  background: var(--c-surface-2);
+  transform: translateY(-1px);
+}
+
+.playAgainBtn:active {
+  transform: translateY(0);
+}
+
+.playAgainBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.playAgainCount {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--c-text-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Tie flicker animation ──────────────────────────────────────────────── */
+@keyframes flicker {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  25% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  75% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.revealCardName.flickering {
+  animation: flicker 0.12s linear infinite;
+}
+
+.revealCardName.settling {
+  animation: flicker 0.25s ease-out 3;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Tiebreaker banner ──────────────────────────────────────────────────── */
+.tieBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.tieBannerIcon {
+  font-size: 1.5rem;
+  animation: iconPulse 0.6s ease-in-out infinite alternate;
+}
+
+.tieBannerText {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  font-weight: 900;
+  color: var(--c-text);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.tieBannerSub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+  animation: blink 1s ease-in-out infinite;
+}
+
+/* ─── Vote row — two chips with arrow ───────────────────────────────────── */
+.voteRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+}
+
+.voteChip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  min-width: 0;
+}
+
+.voteChip.isYou {
+  border-color: rgba(212, 168, 67, 0.2);
+  background: var(--c-amber-dim);
+}
+
+.voteChip.isImpostor {
+  border-color: rgba(201, 64, 64, 0.25);
+  background: var(--c-red-dim);
+}
+
+.voteAvatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.voteAvatar.isYou {
+  background: rgba(212, 168, 67, 0.15);
+  border-color: rgba(212, 168, 67, 0.3);
+  color: var(--c-amber);
+}
+
+.voteAvatar.isImpostor {
+  background: rgba(201, 64, 64, 0.15);
+  border-color: rgba(201, 64, 64, 0.3);
+  color: var(--c-red);
+}
+
+.voteChipName {
+  font-size: 13px;
+  color: var(--c-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.voteArrow {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--c-text-dim);
+  flex-shrink: 0;
+}
+
+/* ─── Extra animations ───────────────────────────────────────────────────── */
+@keyframes iconPulse {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
