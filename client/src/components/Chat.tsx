@@ -48,7 +48,7 @@ const Chat = ({ room, playerId, onSendMessage }: Props) => {
                 <span
                   className={`${styles.messageName} ${isYou ? styles.isYou : ''}`}
                 >
-                  {isYou ? 'You' : m.playerName}
+                  {isYou ? `${m.playerName} (You)` : m.playerName}
                 </span>
                 <span className={styles.messageText}>{m.text}</span>
               </div>
