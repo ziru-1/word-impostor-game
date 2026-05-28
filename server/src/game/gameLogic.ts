@@ -1,5 +1,5 @@
 import { GameRoom, PlayerDescription } from '@impostor/types'
-import { wordPairs } from './words'
+import wordPairs from './words.json'
 
 export function startGame(room: GameRoom, requesterId: string): GameRoom {
   if (room.players.length < 3) throw new Error('Need at least 3 players')
