@@ -26,6 +26,10 @@
   margin-bottom: 0.3rem;
 }
 
+.title .impostor {
+  color: var(--c-red);
+}
+
 .subtitle {
   font-family: var(--font-mono);
   font-size: 10px;

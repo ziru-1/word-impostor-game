@@ -34,7 +34,9 @@ const VotingScreen = ({ playerId, room, onCastVote }: Props) => {
     <div className={styles.page}>
       {/* Header */}
       <div className={styles.header}>
-        <h2 className={styles.title}>Who's the impostor?</h2>
+        <h2 className={styles.title}>
+          Who's the <span className={styles.impostor}>impostor</span>?
+        </h2>
         <p className={styles.subtitle}>Vote to eliminate a suspect</p>
       </div>
 
