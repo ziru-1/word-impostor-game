@@ -179,12 +179,20 @@
   text-overflow: ellipsis;
 }
 
+.playerName.isSelf {
+  color: var(--c-amber);
+}
+
 .playerMeta {
   font-family: var(--font-mono);
   font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--c-text-dim);
+}
+
+.playerMeta.isSelf {
+  color: var(--c-amber);
 }
 
 .playerMeta.voted {
@@ -224,7 +232,7 @@
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-body);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 15px;
   padding: 0.8rem 1.5rem;
   cursor: pointer;

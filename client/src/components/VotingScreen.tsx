@@ -82,8 +82,16 @@ const VotingScreen = ({ playerId, room, onCastVote }: Props) => {
                 {getInitials(player?.name ?? '?')}
               </div>
               <div className={styles.playerInfo}>
-                <span className={styles.playerName}>{player?.name}</span>
-                {isSelf && <span className={styles.playerMeta}>You</span>}
+                <span
+                  className={`${styles.playerName} ${isSelf ? styles.isSelf : ''}`}
+                >
+                  {player?.name}
+                </span>
+                {isSelf && (
+                  <span className={`${styles.playerMeta} ${styles.isSelf}`}>
+                    You
+                  </span>
+                )}
                 {!isSelf && hasVoted && (
                   <span className={`${styles.playerMeta} ${styles.voted}`}>
                     Voted
@@ -159,9 +167,6 @@ const VotingScreen = ({ playerId, room, onCastVote }: Props) => {
                 ? `Vote for ${room.players.find((p) => p.id === selected)?.name}`
                 : 'Select a suspect'}
             </button>
-            {selected && (
-              <p className={styles.confirmHint}>Tap again to deselect</p>
-            )}
           </div>
         ))}
     </div>
