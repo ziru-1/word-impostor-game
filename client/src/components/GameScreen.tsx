@@ -57,9 +57,9 @@ const GameScreen = ({
           <span className={styles.wordLabel}>Your word</span>
           <span className={styles.wordValue}>{playerData.word}</span>
         </div>
-        <span className={styles.roleBadge}>
-          {playerData.isImpostor ? 'Impostor' : 'Crewmate'}
-        </span>
+        {playerData.isImpostor && (
+          <span className={styles.roleBadge}>Impostor</span>
+        )}
       </div>
 
       {/* Round + whose turn */}
@@ -138,7 +138,7 @@ const GameScreen = ({
                   <span
                     className={`${styles.rowName} ${isYou ? styles.isYou : ''}`}
                   >
-                    {isYou ? 'You' : player?.name}
+                    {isYou ? `${player?.name} (You)` : player?.name}
                   </span>
                   {description ? (
                     <span className={styles.rowDescription}>

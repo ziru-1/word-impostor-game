@@ -67,15 +67,9 @@
   text-transform: uppercase;
   padding: 0.3rem 0.65rem;
   border-radius: var(--radius-sm);
-  background: rgba(212, 168, 67, 0.15);
-  color: var(--c-amber);
-  border: 1px solid rgba(212, 168, 67, 0.2);
-}
-
-.wordCard.impostor .roleBadge {
   background: rgba(201, 64, 64, 0.15);
   color: var(--c-red);
-  border-color: rgba(201, 64, 64, 0.25);
+  border: 1px solid rgba(201, 64, 64, 0.25);
 }
 
 /* ─── Round + Turn ───────────────────────────────────────────────────────── */
