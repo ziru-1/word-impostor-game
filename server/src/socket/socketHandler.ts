@@ -8,6 +8,7 @@ import {
   SendMessagePayload,
   StartGamePayload,
   SubmitDecisionPayload,
+  ToggleImpostorHintPayload,
 } from '@impostor/types'
 import { Server, Socket } from 'socket.io'
 import {
@@ -24,6 +25,7 @@ import {
   getRoom,
   joinRoom,
   removePlayerFromRoom,
+  toggleImpostorHint,
   toPublicGameRoom,
   updateRoom,
 } from '../game/roomManager'
@@ -83,6 +85,18 @@ export function setupSocketHandler(io: Server) {
         socket.join(room.id)
         socketRoomMap.set(socket.id, room.id)
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(room))
+      } catch (error) {
+        handleError(socket, error)
+      }
+    })
+
+    socket.on('toggleImpostorHint', (data: ToggleImpostorHintPayload) => {
+      try {
+        const room = getRoom(data.roomId)
+
+        const updatedGameRoom = toggleImpostorHint(room, socket.id)
+
+        io.to(room.id).emit('roomUpdated', toPublicGameRoom(updatedGameRoom))
       } catch (error) {
         handleError(socket, error)
       }

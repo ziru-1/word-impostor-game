@@ -6,6 +6,7 @@ interface Props {
   room: PublicGameRoom
   playerId: string
   onStartGame: (roomId: string) => void
+  onToggleImpostorHint: (roomId: string) => void // <-- Added handler prop
 }
 
 function getInitials(name: string) {
@@ -16,7 +17,12 @@ function getInitials(name: string) {
     .slice(0, 2)
 }
 
-const Lobby = ({ room, playerId, onStartGame }: Props) => {
+const Lobby = ({
+  room,
+  playerId,
+  onStartGame,
+  onToggleImpostorHint,
+}: Props) => {
   const [copied, setCopied] = useState(false)
   const isHost = playerId === room.hostId
   const canStart = room.players.length >= 3
@@ -73,6 +79,34 @@ const Lobby = ({ room, playerId, onStartGame }: Props) => {
               )
             })}
           </ul>
+        </div>
+
+        {/* ─── Game Settings Option ────────────────────────────────────── */}
+        <div className={styles.settingsSection}>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsMeta}>
+              <span className={styles.settingTitle}>Impostor Hint</span>
+              <p className={styles.settingDesc}>
+                Gives the Impostor a fake word related to the secret word.
+              </p>
+            </div>
+            {isHost ? (
+              <button
+                type='button'
+                className={`${styles.toggleSwitch} ${room.impostorHasHint ? styles.toggleOn : ''}`}
+                onClick={() => onToggleImpostorHint(room.id)}
+                aria-label='Toggle Impostor Hint'
+              >
+                <span className={styles.toggleKnob} />
+              </button>
+            ) : (
+              <span
+                className={`${styles.statusBadge} ${room.impostorHasHint ? styles.statusOn : styles.statusOff}`}
+              >
+                {room.impostorHasHint ? 'ON' : 'OFF'}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Footer */}

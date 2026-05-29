@@ -24,6 +24,7 @@ export function createMockRoom(overrides: Partial<GameRoom> = {}): GameRoom {
       }),
     ],
     chatMessages: [],
+    impostorHasHint: true,
     votedOutPlayerId: null,
     playAgainPlayerIds: [],
     ...overrides,

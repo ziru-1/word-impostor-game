@@ -30,6 +30,7 @@ export function createRoom(hostPlayer: Player): GameRoom {
     hostId: hostPlayer.id,
     players: [hostPlayer],
     chatMessages: [],
+    impostorHasHint: true,
     stage: 'lobby',
     roundNumber: 1,
     descriptionOrder: [],
@@ -59,6 +60,27 @@ export function joinRoom(roomId: string, player: Player): GameRoom {
     players: [...room.players, player],
   }
   rooms.set(roomId, updatedRoom)
+  return updatedRoom
+}
+
+export function toggleImpostorHint(
+  room: GameRoom,
+  requesterId: string,
+): GameRoom {
+  if (requesterId !== room.hostId) {
+    throw new Error('Only the host can change game settings')
+  }
+
+  if (room.stage !== 'lobby') {
+    throw new Error('Cannot change settings after the game has started')
+  }
+
+  const updatedRoom: GameRoom = {
+    ...room,
+    impostorHasHint: !room.impostorHasHint,
+  }
+
+  rooms.set(room.id, updatedRoom)
   return updatedRoom
 }
 

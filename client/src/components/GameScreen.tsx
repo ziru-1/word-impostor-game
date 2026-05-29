@@ -55,7 +55,9 @@ const GameScreen = ({
       >
         <div className={styles.wordCardLeft}>
           <span className={styles.wordLabel}>Your word</span>
-          <span className={styles.wordValue}>{playerData.word}</span>
+          <span className={styles.wordValue}>
+            {playerData.word || 'No Hint'}
+          </span>
         </div>
         {playerData.isImpostor && (
           <span className={styles.roleBadge}>Impostor</span>

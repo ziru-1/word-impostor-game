@@ -9,11 +9,20 @@ export function startGame(room: GameRoom, requesterId: string): GameRoom {
 
   const impostorIndex = Math.floor(Math.random() * room.players.length)
 
-  const updatedPlayers = room.players.map((player, index) => ({
-    ...player,
-    word: index === impostorIndex ? wordPair.fakeWord : wordPair.sharedWord,
-    isImpostor: index === impostorIndex,
-  }))
+  const updatedPlayers = room.players.map((player, index) => {
+    const isImpostor = index === impostorIndex
+    let assignedWord = wordPair.sharedWord
+
+    if (isImpostor) {
+      assignedWord = room.impostorHasHint ? wordPair.fakeWord : ''
+    }
+
+    return {
+      ...player,
+      word: assignedWord,
+      isImpostor,
+    }
+  })
 
   const descriptionOrder = updatedPlayers.map((player) => player.id)
 

@@ -62,6 +62,10 @@ export default function App() {
     socket.emit('joinRoom', { name, roomId })
   }
 
+  function onToggleImpostorHint(roomId: string) {
+    socket.emit('toggleImpostorHint', { roomId })
+  }
+
   function onStartGame(roomId: string) {
     socket.emit('startGame', { roomId })
   }
@@ -96,7 +100,12 @@ export default function App() {
         )
       case 'lobby':
         return room && playerId ? (
-          <Lobby room={room} playerId={playerId} onStartGame={onStartGame} />
+          <Lobby
+            room={room}
+            playerId={playerId}
+            onStartGame={onStartGame}
+            onToggleImpostorHint={onToggleImpostorHint}
+          />
         ) : null
       case 'playing':
         return room && playerId && playerData ? (

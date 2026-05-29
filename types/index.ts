@@ -50,6 +50,8 @@ export interface GameRoom {
   players: Player[]
   chatMessages: ChatMessage[]
 
+  impostorHasHint: boolean
+
   stage: GameStage
   roundNumber: number
 
@@ -81,6 +83,9 @@ export interface CreateRoomPayload {
 
 export interface JoinRoomPayload {
   name: string
+  roomId: string
+}
+export interface ToggleImpostorHintPayload {
   roomId: string
 }
 
