@@ -20,21 +20,34 @@ export default function App() {
   const [playerData, setPlayerData] = useState<PlayerGameData | null>(null)
   const [reveal, setReveal] = useState<GameReveal | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [isConnecting, setIsConnecting] = useState(false)
 
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     socket.on('connect', () => setPlayerId(socket.id ?? null))
-    socket.on('roomCreated', (room: PublicGameRoom) => setRoom(room))
-    socket.on('roomUpdated', (room: PublicGameRoom) => setRoom(room))
+
+    socket.on('roomCreated', (room: PublicGameRoom) => {
+      setRoom(room)
+      setIsConnecting(false)
+    })
+
+    socket.on('roomUpdated', (room: PublicGameRoom) => {
+      setRoom(room)
+      setIsConnecting(false)
+    })
+
     socket.on('playerGameData', (playerData: PlayerGameData) =>
       setPlayerData(playerData),
     )
+
     socket.on('gameReveal', (gameRevealData: GameReveal) =>
       setReveal(gameRevealData),
     )
+
     socket.on('error', (error: string) => {
       setErrorMessage(error || 'An unexpected error occurred')
+      setIsConnecting(false)
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
       toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 3000)
     })
@@ -53,11 +66,13 @@ export default function App() {
   }, [])
 
   function onCreateRoom(name: string) {
+    setIsConnecting(true)
     socket.connect()
     socket.emit('createRoom', { name })
   }
 
   function onJoinRoom(name: string, roomId: string) {
+    setIsConnecting(true)
     socket.connect()
     socket.emit('joinRoom', { name, roomId })
   }
@@ -96,7 +111,11 @@ export default function App() {
     switch (stage) {
       case 'landing':
         return (
-          <LandingPage onCreateRoom={onCreateRoom} onJoinRoom={onJoinRoom} />
+          <LandingPage
+            onCreateRoom={onCreateRoom}
+            onJoinRoom={onJoinRoom}
+            isPending={isConnecting}
+          />
         )
       case 'lobby':
         return room && playerId ? (

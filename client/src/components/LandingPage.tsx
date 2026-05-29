@@ -5,15 +5,41 @@ import styles from './LandingPage.module.css'
 interface Props {
   onCreateRoom: (name: string) => void
   onJoinRoom: (name: string, roomId: string) => void
+  isPending: boolean
 }
 
-export default function LandingPage({ onCreateRoom, onJoinRoom }: Props) {
+export default function LandingPage({
+  onCreateRoom,
+  onJoinRoom,
+  isPending,
+}: Props) {
   const [name, setName] = useState('')
   const [roomCode, setRoomCode] = useState('')
   const [showHowToPlay, setShowHowToPlay] = useState(false)
 
+  const [loadingAction, setLoadingAction] = useState<'create' | 'join' | null>(
+    null,
+  )
+
   const trimmedName = name.trim()
   const trimmedCode = roomCode.trim()
+
+  // Reset tracking if App.tsx signals that we are no longer loading
+  if (!isPending && loadingAction !== null) {
+    setLoadingAction(null)
+  }
+
+  const handleCreate = () => {
+    if (!trimmedName || isPending) return
+    setLoadingAction('create')
+    onCreateRoom(trimmedName)
+  }
+
+  const handleJoin = () => {
+    if (!trimmedName || !trimmedCode || isPending) return
+    setLoadingAction('join')
+    onJoinRoom(trimmedName, trimmedCode)
+  }
 
   return (
     <>
@@ -38,6 +64,7 @@ export default function LandingPage({ onCreateRoom, onJoinRoom }: Props) {
             <button
               className={styles.howToPlayBtn}
               onClick={() => setShowHowToPlay(true)}
+              disabled={isPending}
             >
               <span className={styles.howToPlayIcon}>?</span>
               How to play
@@ -58,15 +85,18 @@ export default function LandingPage({ onCreateRoom, onJoinRoom }: Props) {
                 onChange={(e) => setName(e.target.value)}
                 autoComplete='off'
                 maxLength={24}
+                disabled={isPending}
               />
             </div>
 
             <button
               className={styles.primaryBtn}
-              onClick={() => onCreateRoom(trimmedName)}
-              disabled={!trimmedName}
+              onClick={handleCreate}
+              disabled={!trimmedName || isPending}
             >
-              Create Room
+              {isPending && loadingAction === 'create'
+                ? 'Creating Room...'
+                : 'Create Room'}
             </button>
 
             <div className={styles.divider}>
@@ -83,13 +113,14 @@ export default function LandingPage({ onCreateRoom, onJoinRoom }: Props) {
                 onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                 autoComplete='off'
                 maxLength={12}
+                disabled={isPending}
               />
               <button
                 className={styles.secondaryBtn}
-                onClick={() => onJoinRoom(trimmedName, trimmedCode)}
-                disabled={!trimmedName || !trimmedCode}
+                onClick={handleJoin}
+                disabled={!trimmedName || !trimmedCode || isPending}
               >
-                Join
+                {isPending && loadingAction === 'join' ? 'Joining...' : 'Join'}
               </button>
             </div>
           </div>
