@@ -6,7 +6,8 @@ interface Props {
   room: PublicGameRoom
   playerId: string
   onStartGame: (roomId: string) => void
-  onToggleImpostorHint: (roomId: string) => void // <-- Added handler prop
+  onToggleImpostorHint: (roomId: string) => void
+  onLeaveRoom: (roomId: string) => void
 }
 
 function getInitials(name: string) {
@@ -22,6 +23,7 @@ const Lobby = ({
   playerId,
   onStartGame,
   onToggleImpostorHint,
+  onLeaveRoom,
 }: Props) => {
   const [copied, setCopied] = useState(false)
   const isHost = playerId === room.hostId
@@ -36,8 +38,33 @@ const Lobby = ({
   return (
     <div className={styles.page}>
       <div className={styles.inner}>
-        {/* Room code */}
+        {/* Room Header & Actions */}
         <div className={styles.header}>
+          <div className={styles.topActionsRow}>
+            <button
+              type='button'
+              className={styles.leaveBtn}
+              onClick={() => onLeaveRoom(room.id)}
+            >
+              {/* Escape/Leave door icon */}
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2.5'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                className={styles.leaveIcon}
+              >
+                <path d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4' />
+                <polyline points='16 17 21 12 16 7' />
+                <line x1='21' y1='12' x2='9' y2='12' />
+              </svg>
+              Leave Room
+            </button>
+          </div>
+
           <p className={styles.eyebrow}>Room code</p>
           <div className={styles.roomCodeRow}>
             <span className={styles.roomCode}>{room.id}</span>
@@ -81,7 +108,7 @@ const Lobby = ({
           </ul>
         </div>
 
-        {/* ─── Game Settings Option ────────────────────────────────────── */}
+        {/* Game Settings Option */}
         <div className={styles.settingsSection}>
           <div className={styles.settingsRow}>
             <div className={styles.settingsMeta}>

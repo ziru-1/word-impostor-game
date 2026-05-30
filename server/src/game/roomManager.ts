@@ -104,8 +104,7 @@ export function removePlayerFromRoom(
   let newHostId = room.hostId
 
   if (room.hostId === playerId) {
-    const randomIndex = Math.floor(Math.random() * remainingPlayers.length)
-    newHostId = remainingPlayers[randomIndex].id
+    newHostId = remainingPlayers[0].id
   }
 
   const updatedRoom: GameRoom = {

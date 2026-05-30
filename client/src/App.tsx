@@ -77,6 +77,13 @@ export default function App() {
     socket.emit('joinRoom', { name, roomId })
   }
 
+  function onLeaveRoom(roomId: string) {
+    socket.emit('leaveRoom', { roomId })
+    setRoom(null)
+    setPlayerData(null)
+    setReveal(null)
+  }
+
   function onToggleImpostorHint(roomId: string) {
     socket.emit('toggleImpostorHint', { roomId })
   }
@@ -124,6 +131,7 @@ export default function App() {
             playerId={playerId}
             onStartGame={onStartGame}
             onToggleImpostorHint={onToggleImpostorHint}
+            onLeaveRoom={onLeaveRoom}
           />
         ) : null
       case 'playing':
