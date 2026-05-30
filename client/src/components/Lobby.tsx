@@ -5,6 +5,7 @@ import styles from './Lobby.module.css'
 interface Props {
   room: PublicGameRoom
   playerId: string
+  isStartingGame: boolean
   onStartGame: (roomId: string) => void
   onToggleImpostorHint: (roomId: string) => void
   onLeaveRoom: (roomId: string) => void
@@ -21,6 +22,7 @@ function getInitials(name: string) {
 const Lobby = ({
   room,
   playerId,
+  isStartingGame,
   onStartGame,
   onToggleImpostorHint,
   onLeaveRoom,
@@ -123,6 +125,7 @@ const Lobby = ({
                 className={`${styles.toggleSwitch} ${room.impostorHasHint ? styles.toggleOn : ''}`}
                 onClick={() => onToggleImpostorHint(room.id)}
                 aria-label='Toggle Impostor Hint'
+                disabled={isStartingGame}
               >
                 <span className={styles.toggleKnob} />
               </button>
@@ -143,9 +146,9 @@ const Lobby = ({
               <button
                 className={styles.startBtn}
                 onClick={() => onStartGame(room.id)}
-                disabled={!canStart}
+                disabled={!canStart || isStartingGame}
               >
-                Start Game
+                {isStartingGame ? 'Starting Game...' : 'Start Game'}
               </button>
               {!canStart && (
                 <p className={styles.hint}>Need at least 3 players to start</p>

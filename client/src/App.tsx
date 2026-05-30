@@ -21,6 +21,7 @@ export default function App() {
   const [reveal, setReveal] = useState<GameReveal | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
+  const [isStartingGame, setIsStartingGame] = useState(false)
 
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -35,6 +36,7 @@ export default function App() {
     socket.on('roomUpdated', (room: PublicGameRoom) => {
       setRoom(room)
       setIsConnecting(false)
+      setIsStartingGame(false)
     })
 
     socket.on('playerGameData', (playerData: PlayerGameData) =>
@@ -48,6 +50,7 @@ export default function App() {
     socket.on('error', (error: string) => {
       setErrorMessage(error || 'An unexpected error occurred')
       setIsConnecting(false)
+      setIsStartingGame(false)
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
       toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 3000)
     })
@@ -89,6 +92,7 @@ export default function App() {
   }
 
   function onStartGame(roomId: string) {
+    setIsStartingGame(true)
     socket.emit('startGame', { roomId })
   }
 
@@ -129,6 +133,7 @@ export default function App() {
           <Lobby
             room={room}
             playerId={playerId}
+            isStartingGame={isStartingGame}
             onStartGame={onStartGame}
             onToggleImpostorHint={onToggleImpostorHint}
             onLeaveRoom={onLeaveRoom}
