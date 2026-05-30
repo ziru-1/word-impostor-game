@@ -55,6 +55,10 @@ export function joinRoom(roomId: string, player: Player): GameRoom {
     throw new Error('Room is full')
   }
 
+  if (room.stage != 'lobby') {
+    throw new Error('Game has already started')
+  }
+
   const updatedRoom = {
     ...room,
     players: [...room.players, player],
