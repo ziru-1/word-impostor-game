@@ -22,6 +22,7 @@ export interface PlayerGameData {
 
 export interface GameReveal {
   impostorId: PlayerId
+  impostorHasHint: boolean
   sharedWord: string
   fakeWord: string
 }

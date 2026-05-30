@@ -161,7 +161,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
             className={styles.revealCardSub}
             style={{ color: 'var(--c-text-dim)' }}
           >
-            Word: {reveal.fakeWord}
+            Word: {reveal.impostorHasHint ? reveal.fakeWord : '---'}
           </span>
         </div>
       </div>
@@ -175,7 +175,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
         <div className={styles.wordChip}>
           <span className={styles.wordChipLabel}>Fake word</span>
           <span className={`${styles.wordChipValue} ${styles.fake}`}>
-            {reveal.fakeWord}
+            {reveal.impostorHasHint ? reveal.fakeWord : '---'}
           </span>
         </div>
       </div>

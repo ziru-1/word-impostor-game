@@ -165,6 +165,7 @@ export function setupSocketHandler(io: Server) {
 
           io.to(room.id).emit('gameReveal', {
             impostorId: impostor.id,
+            impostorHasHint: updatedGameRoom.impostorHasHint,
             sharedWord: updatedGameRoom.sharedWord,
             fakeWord: updatedGameRoom.fakeWord,
           })
