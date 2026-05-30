@@ -54,13 +54,31 @@ export function setupSocketHandler(io: Server) {
       (p) => p.id === socket.id,
     )
 
-    const updatedRoom = removePlayerFromRoom(roomId, socket.id)
+    let updatedRoom = removePlayerFromRoom(roomId, socket.id)
     if (updatedRoom) {
+      if (updatedRoom.stage === 'results') {
+        updatedRoom.playAgainPlayerIds = updatedRoom.playAgainPlayerIds.filter(
+          (id) => id !== socket.id,
+        )
+
+        const allRemainingAreReady = updatedRoom.players.every((player) =>
+          updatedRoom.playAgainPlayerIds.includes(player.id),
+        )
+
+        if (allRemainingAreReady && updatedRoom.players.length > 0) {
+          updatedRoom.stage = 'lobby'
+          updatedRoom.playAgainPlayerIds = []
+          updatedRoom.votes = []
+          updatedRoom.allDescriptions = []
+          updatedRoom.descriptionOrder = []
+          updatedRoom.votedOutPlayerId = null
+        }
+      }
+
       io.to(roomId).emit('roomUpdated', toPublicGameRoom(updatedRoom))
 
       if (updatedRoom.stage === 'results') {
         const impostor = updatedRoom.players.find((p) => p.isImpostor)
-
         const impostorId = impostor ? impostor.id : (leavingPlayer?.id ?? '')
         const impostorName = impostor
           ? impostor.name
