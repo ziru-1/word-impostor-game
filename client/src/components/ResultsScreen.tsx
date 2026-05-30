@@ -46,14 +46,28 @@ const SETTLE_MS = 900
 const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
   const [tab, setTab] = useState<Tab>('votes')
 
+  const [playerNamesCache] = useState<Record<string, string>>(() => {
+    const cache: Record<string, string> = {}
+    room.players.forEach((p) => {
+      cache[p.id] = p.name
+    })
+    return cache
+  })
+
+  const getPlayerName = (id: string): string => {
+    if (id === reveal.impostorId && reveal.impostorName) {
+      return reveal.impostorName
+    }
+    return playerNamesCache[id] ?? 'Disconnected Player'
+  }
+
   const isPrematureEnd = !room.votedOutPlayerId && room.votes.length === 0
 
-  const votedOutPlayer = room.players.find(
-    (p) => p.id === room.votedOutPlayerId,
-  )
-  const impostor = room.players.find((p) => p.id === reveal.impostorId)
+  const votedOutPlayerName = room.votedOutPlayerId
+    ? getPlayerName(room.votedOutPlayerId)
+    : '—'
+  const impostorName = getPlayerName(reveal.impostorId)
 
-  // Safe calculation: Impostor only loses if explicitly voted out
   const impostorCaught = room.votedOutPlayerId === reveal.impostorId
   const isTie = isTiedResult(room, room.votedOutPlayerId)
   const playerHasPlayedAgain = room.playAgainPlayerIds.includes(playerId)
@@ -79,7 +93,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
     const settleTimer = setTimeout(() => {
       if (flickerRef.current) clearInterval(flickerRef.current)
       setFlickerPhase('settling')
-      setFlickerName(votedOutPlayer?.name ?? '')
+      setFlickerName(votedOutPlayerName)
 
       setTimeout(() => {
         setFlickerPhase('done')
@@ -91,12 +105,10 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
       if (flickerRef.current) clearInterval(flickerRef.current)
       clearTimeout(settleTimer)
     }
-  }, [isTie, votedOutPlayer?.name])
+  }, [isTie, votedOutPlayerName])
 
   const isAnimating = flickerPhase !== 'done'
-  const votedOutDisplayName = isAnimating
-    ? flickerName
-    : (votedOutPlayer?.name ?? '—')
+  const votedOutDisplayName = isAnimating ? flickerName : votedOutPlayerName
 
   function tieClass() {
     if (!isTie) return ''
@@ -145,7 +157,6 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
 
       {/* Reveal cards */}
       <div className={styles.revealRow}>
-        {/* Voted out card — hidden if game ended prematurely without voting */}
         {!isPrematureEnd && (
           <div
             className={`${styles.revealCard} ${!isAnimating ? (impostorCaught ? styles.match : styles.mismatch) : ''}`}
@@ -175,10 +186,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
           <span className={`${styles.revealCardLabel} ${styles.impostorLabel}`}>
             Impostor was
           </span>
-          {/* Priority: Active player list name -> Reveal payload name -> Generic Fallback */}
-          <span className={styles.revealCardName}>
-            {impostor?.name ?? reveal.impostorName ?? 'Disconnected Player'}
-          </span>
+          <span className={styles.revealCardName}>{impostorName}</span>
           <span
             className={styles.revealCardSub}
             style={{ color: 'var(--c-text-dim)' }}
@@ -237,8 +245,9 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
           </p>
         ) : (
           room.votes.map((vote) => {
-            const voter = room.players.find((p) => p.id === vote.voterId)
-            const target = room.players.find((p) => p.id === vote.targetId)
+            const voterName = getPlayerName(vote.voterId)
+            const targetName = getPlayerName(vote.targetId)
+
             const voterIsYou = vote.voterId === playerId
             const targetWasImpostor = vote.targetId === reveal.impostorId
 
@@ -250,14 +259,12 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
                   <div
                     className={`${styles.voteAvatar} ${voterIsYou ? styles.isYou : ''}`}
                   >
-                    {getInitials(voter?.name ?? '?')}
+                    {getInitials(voterName)}
                   </div>
                   <span
                     className={`${styles.voteChipName} ${voterIsYou ? styles.isYou : ''}`}
                   >
-                    {voterIsYou
-                      ? `${voter?.name ?? 'Left'} (You)`
-                      : (voter?.name ?? 'Left')}
+                    {voterIsYou ? `${voterName} (You)` : voterName}
                   </span>
                 </div>
                 <span className={styles.voteArrow}>→</span>
@@ -267,12 +274,12 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
                   <div
                     className={`${styles.voteAvatar} ${targetWasImpostor ? styles.isImpostor : ''}`}
                   >
-                    {getInitials(target?.name ?? '?')}
+                    {getInitials(targetName)}
                   </div>
                   <span
                     className={`${styles.voteChipName} ${targetWasImpostor ? styles.isImpostor : ''}`}
                   >
-                    {target?.name ?? 'Left'}
+                    {targetName}
                   </span>
                 </div>
               </div>
@@ -302,18 +309,18 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
             <div key={index}>
               <p className={styles.roundHeader}>Round {index + 1}</p>
               {room.descriptionOrder.map((id) => {
-                const player = room.players.find((p) => p.id === id)
+                const currentName = getPlayerName(id)
                 const description = roundDescriptions.find(
                   (d) => d.playerId === id,
                 )
+
                 const isYou = id === playerId
                 const isImpostor = id === reveal.impostorId
 
-                // Render logs cleanly even if a player left mid-round
                 return (
                   <div key={id} className={styles.descRow}>
                     <div className={styles.descAvatar}>
-                      {getInitials(player?.name ?? '??')}
+                      {getInitials(currentName)}
                     </div>
                     <div className={styles.descContent}>
                       <span
@@ -323,9 +330,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
                           isImpostor ? styles.isImpostor : '',
                         ].join(' ')}
                       >
-                        {isYou
-                          ? `${player?.name ?? 'Left'} (You)`
-                          : (player?.name ?? 'Left')}
+                        {isYou ? `${currentName} (You)` : currentName}
                         {isImpostor ? ' (impostor)' : ''}
                       </span>
                       <span className={styles.descText}>
@@ -342,6 +347,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
 
       {/* Play again container */}
       <div className={styles.footerContainer}>
+        {/* Note: This grid lists ACTIVE lobby status, so it's correct for disconnected players to disappear from here */}
         <div className={styles.readyPlayersList}>
           {room.players.map((player) => {
             const isReady = room.playAgainPlayerIds.includes(player.id)
