@@ -102,8 +102,6 @@ export function removePlayerFromRoom(
   playerId: string,
 ): GameRoom | null {
   const room = getRoom(roomId)
-
-  const leavingPlayer = room.players.find((p) => p.id === playerId)
   const remainingPlayers = room.players.filter((p) => p.id !== playerId)
 
   if (remainingPlayers.length === 0) {
@@ -119,9 +117,10 @@ export function removePlayerFromRoom(
     hostChangedNotice = ` ${remainingPlayers[0].name} is the new host.`
   }
 
+  const leavingPlayer = room.players.find((p) => p.id === playerId)
   const leavingPlayerName = leavingPlayer ? leavingPlayer.name : 'A player'
 
-  const updatedRoom: GameRoom = {
+  let updatedRoom: GameRoom = {
     ...room,
     players: remainingPlayers,
     hostId: newHostId,
@@ -134,6 +133,41 @@ export function removePlayerFromRoom(
         playerName: 'System',
       },
     ],
+  }
+
+  if (room.stage !== 'lobby' && room.stage !== 'results') {
+    if (remainingPlayers.length < 3) {
+      updatedRoom.stage = 'results'
+      updatedRoom.chatMessages.push({
+        text: 'Game ended prematurely: Not enough players left to continue playing.',
+        isSystem: true,
+        playerId: '',
+        playerName: 'System',
+      })
+
+      rooms.set(roomId, updatedRoom)
+      return updatedRoom
+    }
+
+    const leftPlayerWasImpostor = leavingPlayer?.isImpostor
+    if (leftPlayerWasImpostor) {
+      updatedRoom.stage = 'results'
+      updatedRoom.chatMessages.push({
+        text: `The Impostor left the match! Innocents win by default.`,
+        isSystem: true,
+        playerId: '',
+        playerName: 'System',
+      })
+
+      rooms.set(roomId, updatedRoom)
+      return updatedRoom
+    }
+
+    updatedRoom.descriptionOrder = room.descriptionOrder.filter(
+      (id) => id !== playerId,
+    )
+
+    updatedRoom.votes = room.votes.filter((v) => v.voterId !== playerId)
   }
 
   rooms.set(roomId, updatedRoom)

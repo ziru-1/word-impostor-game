@@ -48,9 +48,32 @@ export function setupSocketHandler(io: Server) {
   function handlePlayerLeave(socket: Socket, roomId: string) {
     socketRoomMap.delete(socket.id)
     socket.leave(roomId)
+
+    const roomBeforeLeave = getRoom(roomId)
+    const leavingPlayer = roomBeforeLeave.players.find(
+      (p) => p.id === socket.id,
+    )
+
     const updatedRoom = removePlayerFromRoom(roomId, socket.id)
     if (updatedRoom) {
       io.to(roomId).emit('roomUpdated', toPublicGameRoom(updatedRoom))
+
+      if (updatedRoom.stage === 'results') {
+        const impostor = updatedRoom.players.find((p) => p.isImpostor)
+
+        const impostorId = impostor ? impostor.id : (leavingPlayer?.id ?? '')
+        const impostorName = impostor
+          ? impostor.name
+          : (leavingPlayer?.name ?? 'Disconnected Player')
+
+        io.to(roomId).emit('gameReveal', {
+          impostorId,
+          impostorName,
+          impostorHasHint: updatedRoom.impostorHasHint,
+          sharedWord: updatedRoom.sharedWord,
+          fakeWord: updatedRoom.fakeWord,
+        })
+      }
     }
   }
 
@@ -165,6 +188,7 @@ export function setupSocketHandler(io: Server) {
 
           io.to(room.id).emit('gameReveal', {
             impostorId: impostor.id,
+            impostorName: impostor.name,
             impostorHasHint: updatedGameRoom.impostorHasHint,
             sharedWord: updatedGameRoom.sharedWord,
             fakeWord: updatedGameRoom.fakeWord,
