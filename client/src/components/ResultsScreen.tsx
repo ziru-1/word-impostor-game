@@ -285,18 +285,41 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
         ))}
       </div>
 
-      {/* Play again */}
-      <div className={styles.footer}>
-        <button
-          className={styles.playAgainBtn}
-          onClick={() => onPlayAgain(room.id)}
-          disabled={playerHasPlayedAgain}
-        >
-          {playerHasPlayedAgain ? 'Waiting for others...' : 'Play Again'}
-        </button>
-        <span className={styles.playAgainCount}>
-          {room.playAgainPlayerIds.length} / {room.players.length}
-        </span>
+      {/* Play again container */}
+      <div className={styles.footerContainer}>
+        {/* Dynamic Ready Player Grid displaying full/truncated names */}
+        <div className={styles.readyPlayersList}>
+          {room.players.map((player) => {
+            const isReady = room.playAgainPlayerIds.includes(player.id)
+            const isYou = player.id === playerId
+            return (
+              <div
+                key={player.id}
+                className={`${styles.readyPlayerBadge} ${isReady ? styles.ready : ''} ${isYou ? styles.isYou : ''}`}
+              >
+                <span className={styles.readyIndicator}>
+                  {isReady ? '✓' : '•••'}
+                </span>
+                <span className={styles.readyPlayerName}>
+                  {isYou ? `${player.name} (You)` : player.name}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className={styles.footer}>
+          <button
+            className={styles.playAgainBtn}
+            onClick={() => onPlayAgain(room.id)}
+            disabled={playerHasPlayedAgain}
+          >
+            {playerHasPlayedAgain ? 'Waiting for others...' : 'Play Again'}
+          </button>
+          <span className={styles.playAgainCount}>
+            {room.playAgainPlayerIds.length} / {room.players.length}
+          </span>
+        </div>
       </div>
     </div>
   )
