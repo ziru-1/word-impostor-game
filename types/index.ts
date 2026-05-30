@@ -13,6 +13,7 @@ export interface ChatMessage {
   playerId: PlayerId
   playerName: string
   text: string
+  isSystem?: boolean
 }
 
 export interface PlayerGameData {

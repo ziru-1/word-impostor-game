@@ -42,6 +42,14 @@ const Chat = ({ room, playerId, onSendMessage }: Props) => {
           <p className={styles.empty}>No messages yet</p>
         ) : (
           room.chatMessages.map((m, i) => {
+            if (m.isSystem) {
+              return (
+                <div key={i} className={styles.systemNotification}>
+                  {m.text}
+                </div>
+              )
+            }
+
             const isYou = m.playerId === playerId
             return (
               <div key={i} className={styles.message}>

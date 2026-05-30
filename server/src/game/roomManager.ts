@@ -59,9 +59,18 @@ export function joinRoom(roomId: string, player: Player): GameRoom {
     throw new Error('Game has already started')
   }
 
-  const updatedRoom = {
+  const updatedRoom: GameRoom = {
     ...room,
     players: [...room.players, player],
+    chatMessages: [
+      ...room.chatMessages,
+      {
+        text: `${player.name} joined the room.`,
+        isSystem: true,
+        playerId: '',
+        playerName: 'System',
+      },
+    ],
   }
   rooms.set(roomId, updatedRoom)
   return updatedRoom
@@ -94,6 +103,7 @@ export function removePlayerFromRoom(
 ): GameRoom | null {
   const room = getRoom(roomId)
 
+  const leavingPlayer = room.players.find((p) => p.id === playerId)
   const remainingPlayers = room.players.filter((p) => p.id !== playerId)
 
   if (remainingPlayers.length === 0) {
@@ -102,18 +112,30 @@ export function removePlayerFromRoom(
   }
 
   let newHostId = room.hostId
+  let hostChangedNotice = ''
 
   if (room.hostId === playerId) {
     newHostId = remainingPlayers[0].id
+    hostChangedNotice = ` ${remainingPlayers[0].name} is the new host.`
   }
+
+  const leavingPlayerName = leavingPlayer ? leavingPlayer.name : 'A player'
 
   const updatedRoom: GameRoom = {
     ...room,
     players: remainingPlayers,
     hostId: newHostId,
+    chatMessages: [
+      ...room.chatMessages,
+      {
+        text: `${leavingPlayerName} left the room.${hostChangedNotice}`,
+        isSystem: true,
+        playerId: '',
+        playerName: 'System',
+      },
+    ],
   }
 
   rooms.set(roomId, updatedRoom)
-
   return updatedRoom
 }
