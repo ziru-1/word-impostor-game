@@ -19,27 +19,19 @@ function getInitials(name: string) {
     .slice(0, 2)
 }
 
-function isTiedResult(room: PublicGameRoom, votedOutId: string | null) {
-  if (!votedOutId) return false
+function getTiedPlayerIds(room: PublicGameRoom): string[] {
   const counts: Record<string, number> = {}
   for (const v of room.votes) {
     counts[v.targetId] = (counts[v.targetId] ?? 0) + 1
   }
-  if (Object.keys(counts).length === 0) return false
-  const max = Math.max(...Object.values(counts))
-  return Object.values(counts).filter((c) => c === max).length > 1
+
+  const entries = Object.entries(counts)
+  if (entries.length === 0) return []
+
+  const max = Math.max(...entries.map(([_, count]) => count))
+  return entries.filter(([_, count]) => count === max).map(([id]) => id)
 }
 
-const FLICKER_NAMES = [
-  'Alex',
-  'Jordan',
-  'Sam',
-  'Morgan',
-  'Riley',
-  'Chris',
-  'Taylor',
-  'Drew',
-]
 const FLICKER_MS = 3000
 const SETTLE_MS = 900
 
@@ -69,24 +61,32 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
   const impostorName = getPlayerName(reveal.impostorId)
 
   const impostorCaught = room.votedOutPlayerId === reveal.impostorId
-  const isTie = isTiedResult(room, room.votedOutPlayerId)
+
+  const tiedPlayerIds = getTiedPlayerIds(room)
+  const isTie = tiedPlayerIds.length > 1
+
   const playerHasPlayedAgain = room.playAgainPlayerIds.includes(playerId)
 
   type FlickerPhase = 'flickering' | 'settling' | 'done'
   const [flickerPhase, setFlickerPhase] = useState<FlickerPhase>(
     isTie ? 'flickering' : 'done',
   )
-  const [flickerName, setFlickerName] = useState<string>(FLICKER_NAMES[0])
+
+  const tiedPlayerNames = tiedPlayerIds.map((id) => getPlayerName(id))
+  const [flickerName, setFlickerName] = useState<string>(
+    tiedPlayerNames.length > 0 ? tiedPlayerNames[0] : 'Thinking...',
+  )
+
   const [tieRevealed, setTieRevealed] = useState(false)
   const [panelAnimated, setPanelAnimated] = useState(false)
   const flickerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
-    if (!isTie) return
+    if (!isTie || tiedPlayerNames.length === 0) return
 
     let i = 0
     flickerRef.current = setInterval(() => {
-      setFlickerName(FLICKER_NAMES[i % FLICKER_NAMES.length])
+      setFlickerName(tiedPlayerNames[i % tiedPlayerNames.length])
       i++
     }, 110)
 
@@ -105,7 +105,7 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
       if (flickerRef.current) clearInterval(flickerRef.current)
       clearTimeout(settleTimer)
     }
-  }, [isTie, votedOutPlayerName])
+  }, [isTie, votedOutPlayerName, tiedPlayerNames.join(',')])
 
   const isAnimating = flickerPhase !== 'done'
   const votedOutDisplayName = isAnimating ? flickerName : votedOutPlayerName
@@ -346,8 +346,9 @@ const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
       </div>
 
       {/* Play again container */}
-      <div className={styles.footerContainer}>
-        {/* Note: This grid lists ACTIVE lobby status, so it's correct for disconnected players to disappear from here */}
+      <div
+        className={`${styles.footerContainer} ${isTie && isAnimating ? styles.hidden : ''}`}
+      >
         <div className={styles.readyPlayersList}>
           {room.players.map((player) => {
             const isReady = room.playAgainPlayerIds.includes(player.id)
