@@ -157,7 +157,7 @@ const GameScreen = ({
                   )}
                   {allPlayersDescribed &&
                     room.roundDecisions.some((d) => d.playerId === id) && (
-                      <span className={styles.votedBadge}>Decided</span>
+                      <span className={styles.votedBadge}>Ready</span>
                     )}
                 </div>
               </div>
@@ -243,21 +243,41 @@ const GameScreen = ({
             </p>
           ) : (
             <>
-              <p className={styles.decisionLabel}>What do you want to do?</p>
-              <div className={styles.decisionBtns}>
-                <button
-                  className={styles.voteBtn}
-                  onClick={() => onSubmitDecision(room.id, 'vote')}
-                >
-                  Vote
-                </button>
-                <button
-                  className={styles.skipBtn}
-                  onClick={() => onSubmitDecision(room.id, 'skip')}
-                >
-                  Skip round
-                </button>
-              </div>
+              {room.roundNumber === 3 ? (
+                <>
+                  <p className={styles.decisionLabel}>
+                    Final descriptions complete. Ready to vote?
+                  </p>
+                  <div className={styles.decisionBtns}>
+                    <button
+                      className={styles.voteBtn}
+                      onClick={() => onSubmitDecision(room.id, 'vote')}
+                    >
+                      Proceed to Vote
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className={styles.decisionLabel}>
+                    What do you want to do?
+                  </p>
+                  <div className={styles.decisionBtns}>
+                    <button
+                      className={styles.voteBtn}
+                      onClick={() => onSubmitDecision(room.id, 'vote')}
+                    >
+                      Vote
+                    </button>
+                    <button
+                      className={styles.skipBtn}
+                      onClick={() => onSubmitDecision(room.id, 'skip')}
+                    >
+                      Skip round
+                    </button>
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

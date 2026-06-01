@@ -6,7 +6,6 @@ export function startGame(room: GameRoom, requesterId: string): GameRoom {
   if (requesterId !== room.hostId) throw new Error('Only host can start game')
 
   const wordPair = wordPairs[Math.floor(Math.random() * wordPairs.length)]
-
   const impostorIndex = Math.floor(Math.random() * room.players.length)
 
   const updatedPlayers = room.players.map((player, index) => {
@@ -29,7 +28,6 @@ export function startGame(room: GameRoom, requesterId: string): GameRoom {
   // Fisher-Yates shuffle
   for (let i = descriptionOrder.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-
     ;[descriptionOrder[i], descriptionOrder[j]] = [
       descriptionOrder[j],
       descriptionOrder[i],
@@ -39,17 +37,13 @@ export function startGame(room: GameRoom, requesterId: string): GameRoom {
   return {
     ...room,
     players: updatedPlayers,
-
     stage: 'playing',
     roundNumber: 1,
-
     sharedWord: wordPair.sharedWord,
     fakeWord: wordPair.fakeWord,
-
     descriptionOrder,
     descriptions: [],
     allDescriptions: [],
-
     votes: [],
     roundDecisions: [],
     votedOutPlayerId: null,
@@ -60,21 +54,12 @@ export function startGame(room: GameRoom, requesterId: string): GameRoom {
 export function checkDescriptionPhaseEnd(room: GameRoom): GameRoom {
   const allPlayersDescribed =
     room.descriptions.length === room.descriptionOrder.length
-  const isFinalRound = room.roundNumber === 3
 
   if (allPlayersDescribed) {
-    if (isFinalRound) {
-      return {
-        ...room,
-        allDescriptions: room.allDescriptions.concat([room.descriptions]),
-        stage: 'voting',
-      }
-    } else {
-      return {
-        ...room,
-        allDescriptions: room.allDescriptions.concat([room.descriptions]),
-        descriptions: [],
-      }
+    return {
+      ...room,
+      allDescriptions: room.allDescriptions.concat([room.descriptions]),
+      descriptions: [],
     }
   }
 
@@ -153,7 +138,7 @@ export function submitRoundDecision(
 
   const majorityVote = voteCount > skipCount
 
-  if (majorityVote) {
+  if (majorityVote || room.roundNumber >= 3) {
     return {
       ...room,
       roundDecisions: updatedRoundDecision,
@@ -175,7 +160,6 @@ export function castVote(
   targetId: string,
 ): GameRoom {
   if (room.stage !== 'voting') throw new Error('Game stage must be in voting')
-
   if (voterId === targetId) throw new Error("Player can't vote themselves")
 
   const targetExists = room.players.some((p) => p.id === targetId)
@@ -200,7 +184,6 @@ export function castVote(
 
   let maxVotes = 0
   let leaders: string[] = []
-
   const voteCounts: Record<string, number> = {}
 
   for (const vote of updatedVotes) {
