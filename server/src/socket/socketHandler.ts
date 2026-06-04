@@ -59,8 +59,13 @@ export function setupSocketHandler(io: Server) {
     if (!leavingPlayer) return
 
     let updatedRoom = removePlayerFromRoom(roomId, socket.id)
-
     if (!updatedRoom) return
+
+    if (updatedRoom.stage === 'playing') {
+      updatedRoom.descriptionOrder = updatedRoom.descriptionOrder.filter(
+        (id) => id !== socket.id,
+      )
+    }
 
     if (updatedRoom.stage === 'results') {
       updatedRoom.playAgainPlayerIds = updatedRoom.playAgainPlayerIds.filter(
@@ -68,7 +73,6 @@ export function setupSocketHandler(io: Server) {
       )
 
       const currentPlayAgainIds = updatedRoom.playAgainPlayerIds
-
       const allRemainingAreReady =
         updatedRoom.players.length > 0 &&
         updatedRoom.players.every((player) =>
@@ -83,10 +87,94 @@ export function setupSocketHandler(io: Server) {
     }
 
     if (updatedRoom.stage === 'playing') {
-      if (
-        updatedRoom.descriptions.length >= updatedRoom.descriptionOrder.length
-      ) {
-        updatedRoom = updateRoom(checkDescriptionPhaseEnd(updatedRoom))
+      const submittedPlayerIds = new Set(
+        updatedRoom.descriptions.map((d) => d.playerId),
+      )
+
+      const allRemainingHaveSubmitted = updatedRoom.descriptionOrder.every(
+        (id) => submittedPlayerIds.has(id),
+      )
+
+      if (allRemainingHaveSubmitted) {
+        updatedRoom.allDescriptions = updatedRoom.allDescriptions.concat([
+          updatedRoom.descriptions,
+        ])
+        updatedRoom.descriptions = []
+
+        updateRoom(updatedRoom)
+      }
+    }
+
+    if (
+      updatedRoom.roundDecisions.length > 0 &&
+      updatedRoom.stage === 'playing'
+    ) {
+      updatedRoom.roundDecisions = updatedRoom.roundDecisions.filter(
+        (d) => d.playerId !== socket.id,
+      )
+
+      const decisionPlayerIds = new Set(
+        updatedRoom.roundDecisions.map((d) => d.playerId),
+      )
+      const allPlayersDecided = updatedRoom.players.every((player) =>
+        decisionPlayerIds.has(player.id),
+      )
+
+      if (allPlayersDecided) {
+        let voteCount = 0
+        let skipCount = 0
+
+        for (const d of updatedRoom.roundDecisions) {
+          if (d.choice === 'vote') voteCount++
+          else if (d.choice === 'skip') skipCount++
+        }
+
+        if (voteCount > skipCount || updatedRoom.roundNumber >= 3) {
+          updatedRoom.stage = 'voting'
+        } else {
+          updatedRoom.roundNumber = updatedRoom.roundNumber + 1
+          updatedRoom.descriptions = []
+          updatedRoom.roundDecisions = []
+        }
+        updateRoom(updatedRoom)
+      }
+    }
+
+    if (updatedRoom.stage === 'voting') {
+      updatedRoom.votes = updatedRoom.votes.filter(
+        (v) => v.voterId !== socket.id,
+      )
+
+      const votesVoterIds = new Set(updatedRoom.votes.map((d) => d.voterId))
+      const allPlayersVoted = updatedRoom.players.every((player) =>
+        votesVoterIds.has(player.id),
+      )
+
+      if (allPlayersVoted) {
+        let maxVotes = 0
+        let leaders: string[] = []
+        const voteCounts: Record<string, number> = {}
+
+        for (const vote of updatedRoom.votes) {
+          const count = (voteCounts[vote.targetId] || 0) + 1
+          voteCounts[vote.targetId] = count
+
+          if (count > maxVotes) {
+            maxVotes = count
+            leaders = [vote.targetId]
+          } else if (count === maxVotes) {
+            leaders.push(vote.targetId)
+          }
+        }
+
+        const votedOutPlayerId =
+          leaders.length === 1
+            ? leaders[0]
+            : leaders[Math.floor(Math.random() * leaders.length)]
+
+        updatedRoom.votedOutPlayerId = votedOutPlayerId
+        updatedRoom.stage = 'results'
+        updateRoom(updatedRoom)
       }
     }
 
@@ -94,7 +182,6 @@ export function setupSocketHandler(io: Server) {
 
     if (updatedRoom.stage === 'results') {
       const remainingImpostor = updatedRoom.players.find((p) => p.isImpostor)
-
       const impostorId = remainingImpostor
         ? remainingImpostor.id
         : leavingPlayer.id
@@ -102,7 +189,7 @@ export function setupSocketHandler(io: Server) {
         ? remainingImpostor.name
         : leavingPlayer.name
 
-      const revealData: GameReveal = {
+      const revealData = {
         impostorId,
         impostorName,
         impostorHasHint: updatedRoom.impostorHasHint,

@@ -79,8 +79,10 @@ export function submitDescription(
     throw new Error('Description cannot be empty')
   }
 
-  const currentIndex = room.descriptions.length
-  const expectedPlayerId = room.descriptionOrder[currentIndex]
+  const submittedPlayerIds = new Set(room.descriptions.map((d) => d.playerId))
+  const expectedPlayerId = room.descriptionOrder.find(
+    (id) => !submittedPlayerIds.has(id),
+  )
 
   if (!expectedPlayerId) {
     throw new Error('No more players expected to submit')
