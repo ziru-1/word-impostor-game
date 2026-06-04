@@ -1,6 +1,7 @@
 import {
   CastVotePayload,
   CreateRoomPayload,
+  GameReveal,
   JoinRoomPayload,
   PlayAgainPayload,
   Player,
@@ -25,6 +26,7 @@ import {
   getRoom,
   joinRoom,
   removePlayerFromRoom,
+  resetRoomToLobby,
   toggleImpostorHint,
   toPublicGameRoom,
   updateRoom,
@@ -50,48 +52,65 @@ export function setupSocketHandler(io: Server) {
     socket.leave(roomId)
 
     const roomBeforeLeave = getRoom(roomId)
-    const leavingPlayer = roomBeforeLeave.players.find(
+    const leavingPlayer = roomBeforeLeave?.players.find(
       (p) => p.id === socket.id,
     )
 
+    if (!leavingPlayer) return
+
     let updatedRoom = removePlayerFromRoom(roomId, socket.id)
-    if (updatedRoom) {
-      if (updatedRoom.stage === 'results') {
-        updatedRoom.playAgainPlayerIds = updatedRoom.playAgainPlayerIds.filter(
-          (id) => id !== socket.id,
+
+    if (!updatedRoom) return
+
+    if (updatedRoom.stage === 'results') {
+      updatedRoom.playAgainPlayerIds = updatedRoom.playAgainPlayerIds.filter(
+        (id) => id !== socket.id,
+      )
+
+      const currentPlayAgainIds = updatedRoom.playAgainPlayerIds
+
+      const allRemainingAreReady =
+        updatedRoom.players.length > 0 &&
+        updatedRoom.players.every((player) =>
+          currentPlayAgainIds.includes(player.id),
         )
 
-        const allRemainingAreReady = updatedRoom.players.every((player) =>
-          updatedRoom.playAgainPlayerIds.includes(player.id),
-        )
+      if (allRemainingAreReady) {
+        updatedRoom = resetRoomToLobby(updatedRoom)
+      } else {
+        updateRoom(updatedRoom)
+      }
+    }
 
-        if (allRemainingAreReady && updatedRoom.players.length > 0) {
-          updatedRoom.stage = 'lobby'
-          updatedRoom.playAgainPlayerIds = []
-          updatedRoom.votes = []
-          updatedRoom.allDescriptions = []
-          updatedRoom.descriptionOrder = []
-          updatedRoom.votedOutPlayerId = null
-        }
+    if (updatedRoom.stage === 'playing') {
+      if (
+        updatedRoom.descriptions.length >= updatedRoom.descriptionOrder.length
+      ) {
+        updatedRoom = updateRoom(checkDescriptionPhaseEnd(updatedRoom))
+      }
+    }
+
+    io.to(roomId).emit('roomUpdated', toPublicGameRoom(updatedRoom))
+
+    if (updatedRoom.stage === 'results') {
+      const remainingImpostor = updatedRoom.players.find((p) => p.isImpostor)
+
+      const impostorId = remainingImpostor
+        ? remainingImpostor.id
+        : leavingPlayer.id
+      const impostorName = remainingImpostor
+        ? remainingImpostor.name
+        : leavingPlayer.name
+
+      const revealData: GameReveal = {
+        impostorId,
+        impostorName,
+        impostorHasHint: updatedRoom.impostorHasHint,
+        sharedWord: updatedRoom.sharedWord,
+        fakeWord: updatedRoom.fakeWord,
       }
 
-      io.to(roomId).emit('roomUpdated', toPublicGameRoom(updatedRoom))
-
-      if (updatedRoom.stage === 'results') {
-        const impostor = updatedRoom.players.find((p) => p.isImpostor)
-        const impostorId = impostor ? impostor.id : (leavingPlayer?.id ?? '')
-        const impostorName = impostor
-          ? impostor.name
-          : (leavingPlayer?.name ?? 'Disconnected Player')
-
-        io.to(roomId).emit('gameReveal', {
-          impostorId,
-          impostorName,
-          impostorHasHint: updatedRoom.impostorHasHint,
-          sharedWord: updatedRoom.sharedWord,
-          fakeWord: updatedRoom.fakeWord,
-        })
-      }
+      io.to(roomId).emit('gameReveal', revealData)
     }
   }
 

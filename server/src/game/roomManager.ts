@@ -173,3 +173,27 @@ export function removePlayerFromRoom(
   rooms.set(roomId, updatedRoom)
   return updatedRoom
 }
+
+export function resetRoomToLobby(room: GameRoom): GameRoom {
+  const updatedRoom: GameRoom = {
+    ...room,
+    stage: 'lobby',
+    roundNumber: 1,
+    descriptionOrder: [],
+    descriptions: [],
+    allDescriptions: [],
+    roundDecisions: [],
+    votes: [],
+    sharedWord: '',
+    fakeWord: '',
+    votedOutPlayerId: null,
+    playAgainPlayerIds: [],
+    players: room.players.map((player) => ({
+      ...player,
+      word: '',
+      isImpostor: false,
+    })),
+  }
+  rooms.set(room.id, updatedRoom)
+  return updatedRoom
+}
