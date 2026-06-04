@@ -51,6 +51,7 @@ export interface GameRoom {
   hostId: PlayerId
 
   players: Player[]
+  allPlayerNames: Record<string, string>
   chatMessages: ChatMessage[]
 
   impostorHasHint: boolean

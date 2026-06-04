@@ -61,12 +61,6 @@ export function setupSocketHandler(io: Server) {
     let updatedRoom = removePlayerFromRoom(roomId, socket.id)
     if (!updatedRoom) return
 
-    if (updatedRoom.stage === 'playing') {
-      updatedRoom.descriptionOrder = updatedRoom.descriptionOrder.filter(
-        (id) => id !== socket.id,
-      )
-    }
-
     if (updatedRoom.stage === 'results') {
       updatedRoom.playAgainPlayerIds = updatedRoom.playAgainPlayerIds.filter(
         (id) => id !== socket.id,
@@ -141,10 +135,6 @@ export function setupSocketHandler(io: Server) {
     }
 
     if (updatedRoom.stage === 'voting') {
-      updatedRoom.votes = updatedRoom.votes.filter(
-        (v) => v.voterId !== socket.id,
-      )
-
       const votesVoterIds = new Set(updatedRoom.votes.map((d) => d.voterId))
       const allPlayersVoted = updatedRoom.players.every((player) =>
         votesVoterIds.has(player.id),
@@ -185,9 +175,9 @@ export function setupSocketHandler(io: Server) {
       const impostorId = remainingImpostor
         ? remainingImpostor.id
         : leavingPlayer.id
-      const impostorName = remainingImpostor
-        ? remainingImpostor.name
-        : leavingPlayer.name
+
+      const impostorName =
+        updatedRoom.allPlayerNames[impostorId] || leavingPlayer.name
 
       const revealData = {
         impostorId,

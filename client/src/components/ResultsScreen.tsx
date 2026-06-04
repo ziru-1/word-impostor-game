@@ -38,19 +38,11 @@ const SETTLE_MS = 900
 const ResultsScreen = ({ room, playerId, reveal, onPlayAgain }: Props) => {
   const [tab, setTab] = useState<Tab>('votes')
 
-  const [playerNamesCache] = useState<Record<string, string>>(() => {
-    const cache: Record<string, string> = {}
-    room.players.forEach((p) => {
-      cache[p.id] = p.name
-    })
-    return cache
-  })
-
   const getPlayerName = (id: string): string => {
     if (id === reveal.impostorId && reveal.impostorName) {
       return reveal.impostorName
     }
-    return playerNamesCache[id] ?? 'Disconnected Player'
+    return room.allPlayerNames[id] ?? 'Unknown Player'
   }
 
   const isPrematureEnd = !room.votedOutPlayerId && room.votes.length === 0

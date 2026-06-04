@@ -6,6 +6,7 @@ export function toPublicGameRoom(room: GameRoom): PublicGameRoom {
   const { sharedWord, fakeWord, ...rest } = room
   return {
     ...rest,
+    allPlayerNames: room.allPlayerNames,
     players: room.players.map(({ id, name }) => ({
       id,
       name,
@@ -29,6 +30,7 @@ export function createRoom(hostPlayer: Player): GameRoom {
     id: Math.random().toString(36).slice(2, 7).toUpperCase(),
     hostId: hostPlayer.id,
     players: [hostPlayer],
+    allPlayerNames: { [hostPlayer.id]: hostPlayer.name },
     chatMessages: [],
     impostorHasHint: true,
     stage: 'lobby',
@@ -62,6 +64,10 @@ export function joinRoom(roomId: string, player: Player): GameRoom {
   const updatedRoom: GameRoom = {
     ...room,
     players: [...room.players, player],
+    allPlayerNames: {
+      ...room.allPlayerNames,
+      [player.id]: player.name,
+    },
     chatMessages: [
       ...room.chatMessages,
       {

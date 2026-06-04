@@ -23,6 +23,11 @@ export function createMockRoom(overrides: Partial<GameRoom> = {}): GameRoom {
         word: 'cat',
       }),
     ],
+    allPlayerNames: {
+      P1: 'Alice',
+      P2: 'Bob',
+      P3: 'Charlie',
+    },
     chatMessages: [],
     impostorHasHint: true,
     votedOutPlayerId: null,
