@@ -3,17 +3,19 @@ import HowToPlayModal from './HowToPlayModal'
 import styles from './LandingPage.module.css'
 
 interface Props {
+  initialName: string
   onCreateRoom: (name: string) => void
   onJoinRoom: (name: string, roomId: string) => void
   isPending: boolean
 }
 
 export default function LandingPage({
+  initialName,
   onCreateRoom,
   onJoinRoom,
   isPending,
 }: Props) {
-  const [name, setName] = useState('')
+  const [name, setName] = useState(initialName)
   const [roomCode, setRoomCode] = useState('')
   const [showHowToPlay, setShowHowToPlay] = useState(false)
 

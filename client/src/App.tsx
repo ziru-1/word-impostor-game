@@ -23,6 +23,10 @@ export default function App() {
   const [isConnecting, setIsConnecting] = useState(false)
   const [isStartingGame, setIsStartingGame] = useState(false)
 
+  const [persistedName, setPersistedName] = useState<string>(() => {
+    return localStorage.getItem('impostor_player_name') || ''
+  })
+
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -79,6 +83,8 @@ export default function App() {
   }, [])
 
   function onCreateRoom(name: string) {
+    setPersistedName(name)
+    localStorage.setItem('impostor_player_name', name)
     setIsConnecting(true)
     socket.connect()
     socket.emit('createRoom', { name })
@@ -137,6 +143,7 @@ export default function App() {
       case 'landing':
         return (
           <LandingPage
+            initialName={persistedName}
             onCreateRoom={onCreateRoom}
             onJoinRoom={onJoinRoom}
             isPending={isConnecting}
