@@ -39,6 +39,15 @@ export default function App() {
       setIsStartingGame(false)
     })
 
+    socket.on('kicked', () => {
+      setRoom(null)
+      setPlayerData(null)
+      setReveal(null)
+      setErrorMessage('You have been kicked from the room by the host')
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
+      toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 4000)
+    })
+
     socket.on('playerGameData', (playerData: PlayerGameData) =>
       setPlayerData(playerData),
     )
@@ -59,6 +68,7 @@ export default function App() {
       socket.off('connect')
       socket.off('roomCreated')
       socket.off('roomUpdated')
+      socket.off('kicked')
       socket.off('playerGameData')
       socket.off('gameReveal')
       socket.off('error')
@@ -78,6 +88,10 @@ export default function App() {
     setIsConnecting(true)
     socket.connect()
     socket.emit('joinRoom', { name, roomId })
+  }
+
+  function onKickPlayer(roomId: string, targetId: string) {
+    socket.emit('kickPlayer', { roomId, targetId })
   }
 
   function onLeaveRoom(roomId: string) {
@@ -137,6 +151,7 @@ export default function App() {
             onStartGame={onStartGame}
             onToggleImpostorHint={onToggleImpostorHint}
             onLeaveRoom={onLeaveRoom}
+            onKickPlayer={onKickPlayer}
           />
         ) : null
       case 'playing':

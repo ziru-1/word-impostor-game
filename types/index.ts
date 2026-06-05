@@ -120,3 +120,8 @@ export interface PlayerDescriptionPayload {
 export interface PlayAgainPayload {
   roomId: string
 }
+
+export interface KickPlayerPayload {
+  roomId: string
+  targetId: PlayerId
+}

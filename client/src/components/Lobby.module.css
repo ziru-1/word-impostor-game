@@ -197,6 +197,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-right: 0.25rem;
 }
 
 .hostBadge {
@@ -222,6 +223,35 @@
 .playerRow.you {
   border-color: rgba(255, 255, 255, 0.12);
   background: var(--c-surface-2);
+}
+
+/* ─── Kick Actions ───────────────────────────────────────────────────────── */
+.kickBtn {
+  background: transparent;
+  color: var(--c-text-dim);
+  border: none;
+  padding: 0.35rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+  transition:
+    color var(--transition),
+    background var(--transition);
+}
+
+.kickIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.kickBtn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
 }
 
 /* ─── Footer ─────────────────────────────────────────────────────────────── */

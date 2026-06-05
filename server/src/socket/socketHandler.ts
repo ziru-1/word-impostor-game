@@ -3,6 +3,7 @@ import {
   CreateRoomPayload,
   GameReveal,
   JoinRoomPayload,
+  KickPlayerPayload,
   PlayAgainPayload,
   Player,
   PlayerDescriptionPayload,
@@ -25,6 +26,7 @@ import {
   createRoom,
   getRoom,
   joinRoom,
+  kickPlayerFromRoom,
   removePlayerFromRoom,
   resetRoomToLobby,
   toggleImpostorHint,
@@ -222,6 +224,27 @@ export function setupSocketHandler(io: Server) {
         socket.join(room.id)
         socketRoomMap.set(socket.id, room.id)
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(room))
+      } catch (error) {
+        handleError(socket, error)
+      }
+    })
+
+    socket.on('kickPlayer', (data: KickPlayerPayload) => {
+      try {
+        const updatedRoom = kickPlayerFromRoom(
+          data.roomId,
+          socket.id,
+          data.targetId,
+        )
+
+        const targetSocket = io.sockets.sockets.get(data.targetId)
+        if (targetSocket) {
+          socketRoomMap.delete(data.targetId)
+          targetSocket.leave(data.roomId)
+          targetSocket.emit('kicked')
+        }
+
+        io.to(data.roomId).emit('roomUpdated', toPublicGameRoom(updatedRoom))
       } catch (error) {
         handleError(socket, error)
       }

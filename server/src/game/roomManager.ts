@@ -82,6 +82,50 @@ export function joinRoom(roomId: string, player: Player): GameRoom {
   return updatedRoom
 }
 
+export function kickPlayerFromRoom(
+  roomId: string,
+  hostId: string,
+  targetId: string,
+): GameRoom {
+  const room = getRoom(roomId)
+
+  if (hostId !== room.hostId) {
+    throw new Error('Only the host can kick players')
+  }
+
+  if (room.stage !== 'lobby') {
+    throw new Error('Players can only be kicked while in the lobby')
+  }
+
+  if (targetId === room.hostId) {
+    throw new Error('You cannot kick yourself')
+  }
+
+  const targetPlayer = room.players.find((p) => p.id === targetId)
+  if (!targetPlayer) {
+    throw new Error('Player not found in room')
+  }
+
+  const remainingPlayers = room.players.filter((p) => p.id !== targetId)
+
+  const updatedRoom: GameRoom = {
+    ...room,
+    players: remainingPlayers,
+    chatMessages: [
+      ...room.chatMessages,
+      {
+        text: `${targetPlayer.name} was kicked from the room by the host.`,
+        isSystem: true,
+        playerId: '',
+        playerName: 'System',
+      },
+    ],
+  }
+
+  rooms.set(roomId, updatedRoom)
+  return updatedRoom
+}
+
 export function toggleImpostorHint(
   room: GameRoom,
   requesterId: string,

@@ -9,6 +9,7 @@ interface Props {
   onStartGame: (roomId: string) => void
   onToggleImpostorHint: (roomId: string) => void
   onLeaveRoom: (roomId: string) => void
+  onKickPlayer: (roomId: string, targetId: string) => void
 }
 
 function getInitials(name: string) {
@@ -26,6 +27,7 @@ const Lobby = ({
   onStartGame,
   onToggleImpostorHint,
   onLeaveRoom,
+  onKickPlayer,
 }: Props) => {
   const [copied, setCopied] = useState(false)
   const isHost = playerId === room.hostId
@@ -88,6 +90,8 @@ const Lobby = ({
             {room.players.map((player, i) => {
               const isYou = player.id === playerId
               const isPlayerHost = player.id === room.hostId
+              const showKickButton = isHost && !isPlayerHost
+
               return (
                 <li
                   key={player.id}
@@ -104,6 +108,30 @@ const Lobby = ({
                     <span className={styles.hostBadge}>Host</span>
                   )}
                   {isYou && <span className={styles.youBadge}>You</span>}
+
+                  {showKickButton && (
+                    <button
+                      type='button'
+                      className={styles.kickBtn}
+                      onClick={() => onKickPlayer(room.id, player.id)}
+                      title={`Kick ${player.name}`}
+                    >
+                      {/* Clean Cross/Cancel Icon */}
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='2.5'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        className={styles.kickIcon}
+                      >
+                        <line x1='18' y1='6' x2='6' y2='18' />
+                        <line x1='6' y1='6' x2='18' y2='18' />
+                      </svg>
+                    </button>
+                  )}
                 </li>
               )
             })}
