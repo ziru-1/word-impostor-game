@@ -5,6 +5,7 @@ import type {
 } from '@impostor/types'
 import { useEffect, useRef, useState } from 'react'
 import styles from './App.module.css'
+import { playGameMusic, stopGameMusic } from './audioManager'
 import Chat from './components/Chat'
 import GameScreen from './components/GameScreen'
 import LandingPage from './components/LandingPage'
@@ -47,6 +48,7 @@ export default function App() {
       setRoom(null)
       setPlayerData(null)
       setReveal(null)
+      stopGameMusic()
       setErrorMessage('You have been kicked from the room by the host')
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
       toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 4000)
@@ -64,6 +66,7 @@ export default function App() {
       setErrorMessage(error || 'An unexpected error occurred')
       setIsConnecting(false)
       setIsStartingGame(false)
+      stopGameMusic()
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
       toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 3000)
     })
@@ -86,12 +89,18 @@ export default function App() {
     setPersistedName(name)
     localStorage.setItem('impostor_player_name', name)
     setIsConnecting(true)
+
+    playGameMusic()
+
     socket.connect()
     socket.emit('createRoom', { name })
   }
 
   function onJoinRoom(name: string, roomId: string) {
     setIsConnecting(true)
+
+    playGameMusic()
+
     socket.connect()
     socket.emit('joinRoom', { name, roomId })
   }
@@ -105,6 +114,8 @@ export default function App() {
     setRoom(null)
     setPlayerData(null)
     setReveal(null)
+
+    stopGameMusic()
   }
 
   function onToggleImpostorHint(roomId: string) {

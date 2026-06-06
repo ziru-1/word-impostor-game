@@ -1,5 +1,6 @@
 import type { PublicGameRoom } from '@impostor/types'
 import { useState } from 'react'
+import { DEFAULT_VOLUME, gameMusic } from '../audioManager'
 import styles from './Lobby.module.css'
 
 interface Props {
@@ -30,6 +31,9 @@ const Lobby = ({
   onKickPlayer,
 }: Props) => {
   const [copied, setCopied] = useState(false)
+
+  const [isMuted, setIsMuted] = useState(false)
+
   const isHost = playerId === room.hostId
   const canStart = room.players.length >= 3
 
@@ -37,6 +41,16 @@ const Lobby = ({
     navigator.clipboard.writeText(room.id)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  function handleToggleMute() {
+    if (isMuted) {
+      gameMusic.volume(DEFAULT_VOLUME)
+      setIsMuted(false)
+    } else {
+      gameMusic.volume(0)
+      setIsMuted(true)
+    }
   }
 
   return (
@@ -50,7 +64,6 @@ const Lobby = ({
               className={styles.leaveBtn}
               onClick={() => onLeaveRoom(room.id)}
             >
-              {/* Escape/Leave door icon */}
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 viewBox='0 0 24 24'
@@ -66,6 +79,49 @@ const Lobby = ({
                 <line x1='21' y1='12' x2='9' y2='12' />
               </svg>
               Leave Room
+            </button>
+
+            <button
+              type='button'
+              className={styles.audioBtn}
+              onClick={handleToggleMute}
+            >
+              {isMuted ? (
+                <>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2.5'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    className={styles.leaveIcon}
+                  >
+                    <path d='M11 5L6 9H2v6h4l5 4V5z' />
+                    <line x1='23' y1='9' x2='17' y2='15' />
+                    <line x1='17' y1='9' x2='23' y2='15' />
+                  </svg>
+                  Unmute
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2.5'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    className={styles.leaveIcon}
+                  >
+                    <path d='M11 5L6 9H2v6h4l5 4V5z' />
+                    <path d='M15.54 8.46a5 5 0 0 1 0 7.07' />
+                  </svg>
+                  Mute
+                </>
+              )}
             </button>
           </div>
 
@@ -116,7 +172,6 @@ const Lobby = ({
                       onClick={() => onKickPlayer(room.id, player.id)}
                       title={`Kick ${player.name}`}
                     >
-                      {/* Clean Cross/Cancel Icon */}
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         viewBox='0 0 24 24'
@@ -194,6 +249,16 @@ const Lobby = ({
           )}
         </div>
       </div>
+      <p className={styles.musicCredit}>
+        Track by:{' '}
+        <a
+          href='https://www.youtube.com/@inu.neko.bgm.2025'
+          target='_blank'
+          rel='noreferrer'
+        >
+          inu.neko.bgm.2025
+        </a>
+      </p>
     </div>
   )
 }

@@ -35,7 +35,9 @@
 /* ─── Top Actions ────────────────────────────────────────────────────────── */
 .topActionsRow {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   margin-bottom: clamp(0.75rem, 2vh, 1.5rem);
 }
 
@@ -70,6 +72,33 @@
   color: #ef4444;
   background: rgba(239, 68, 68, 0.08);
   border-color: rgba(239, 68, 68, 0.25);
+}
+
+.audioBtn {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--c-text-muted);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.4rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition:
+    color var(--transition),
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.audioBtn:hover {
+  color: var(--c-amber);
+  background: var(--c-amber-dim);
+  border-color: rgba(212, 168, 67, 0.25);
 }
 
 .eyebrow {
@@ -431,6 +460,29 @@
 .statusOff {
   background: var(--c-surface-2);
   color: var(--c-text-dim);
+}
+
+/* ─── Music Credit ───────────────────────────────────────────────────────── */
+.musicCredit {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--c-text-dim);
+  text-align: center;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  opacity: 0.6;
+  transition: opacity var(--transition);
+}
+
+.musicCredit a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.musicCredit a:hover {
+  opacity: 1;
+  color: var(--c-amber); /* Matches your game theme accent */
 }
 
 /* ─── Animations ─────────────────────────────────────────────────────────── */
