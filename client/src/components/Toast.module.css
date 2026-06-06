@@ -3,6 +3,8 @@
   top: 1.25rem;
   left: 50%;
   transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 2.5rem);
   z-index: 999;
 
   background: var(--c-red);
@@ -13,7 +15,9 @@
   font-size: 14px;
   letter-spacing: 0.06em;
   padding: 0.6rem 1rem;
-  white-space: nowrap;
+
+  white-space: normal;
+  word-break: break-word;
 
   animation: slideDown 0.2s ease forwards;
 }
