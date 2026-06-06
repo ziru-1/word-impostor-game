@@ -21,3 +21,8 @@ export const stopGameMusic = () => {
     gameMusic.stop()
   }, 1000)
 }
+
+export const chatSfx = new Howl({
+  src: ['/audio/pop.ogg'],
+  volume: DEFAULT_VOLUME,
+})

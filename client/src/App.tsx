@@ -5,7 +5,7 @@ import type {
 } from '@impostor/types'
 import { useEffect, useRef, useState } from 'react'
 import styles from './App.module.css'
-import { playGameMusic, stopGameMusic } from './audioManager'
+import { chatSfx, playGameMusic, stopGameMusic } from './audioManager'
 import Chat from './components/Chat'
 import GameScreen from './components/GameScreen'
 import LandingPage from './components/LandingPage'
@@ -29,16 +29,22 @@ export default function App() {
   })
 
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const prevChatLengthRef = useRef<number>(0)
 
   useEffect(() => {
     socket.on('connect', () => setPlayerId(socket.id ?? null))
 
     socket.on('roomCreated', (room: PublicGameRoom) => {
       setRoom(room)
+      prevChatLengthRef.current = room.chatMessages.length
       setIsConnecting(false)
     })
 
     socket.on('roomUpdated', (room: PublicGameRoom) => {
+      if (room.chatMessages.length > prevChatLengthRef.current) {
+        chatSfx.play()
+      }
+      prevChatLengthRef.current = room.chatMessages.length
       setRoom(room)
       setIsConnecting(false)
       setIsStartingGame(false)
