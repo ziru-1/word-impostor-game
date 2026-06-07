@@ -1,5 +1,7 @@
 # Word Impostor Game
 
+[![Run Tests](https://github.com/ziru-1/word-impostor-game/actions/workflows/test.yml/badge.svg)](https://github.com/ziru-1/word-impostor-game/actions/workflows/test.yml)
+
 A real-time multiplayer social deduction game. Players receive a secret word and must describe it without giving it away - but one player, the Impostor, has a different word and must blend in.
 
 🔗 **[Live Demo](https://word-impostor-game.vercel.app/)**
