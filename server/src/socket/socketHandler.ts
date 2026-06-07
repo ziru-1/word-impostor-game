@@ -1,7 +1,6 @@
 import {
   CastVotePayload,
   CreateRoomPayload,
-  GameReveal,
   JoinRoomPayload,
   KickPlayerPayload,
   PlayAgainPayload,
@@ -33,6 +32,7 @@ import {
   toPublicGameRoom,
   updateRoom,
 } from '../game/roomManager'
+import { checkRateLimit, clearRateLimitTracker } from '../utils/rateLimiter'
 
 const socketRoomMap = new Map<string, string>()
 
@@ -51,6 +51,7 @@ function createPlayerFromSocket(socketId: string, name: string): Player {
 export function setupSocketHandler(io: Server) {
   function handlePlayerLeave(socket: Socket, roomId: string) {
     socketRoomMap.delete(socket.id)
+    clearRateLimitTracker(socket.id)
     socket.leave(roomId)
 
     const roomBeforeLeave = getRoom(roomId)
@@ -196,8 +197,28 @@ export function setupSocketHandler(io: Server) {
   io.on('connection', (socket) => {
     console.log('a user connected', socket.id)
 
+    socket.use(([event, ...args], next) => {
+      if (!checkRateLimit(socket.id, 8, 3000)) {
+        return next(
+          new Error('You are performing actions too fast. Please slow down.'),
+        )
+      }
+      next()
+    })
+
+    socket.on('error', (err) => {
+      socket.emit('error', err.message || 'Rate limit exceeded')
+    })
+
     socket.on('createRoom', (data: CreateRoomPayload) => {
       try {
+        if (!checkRateLimit(`create-${socket.id}`, 2, 10000)) {
+          return socket.emit(
+            'error',
+            'Too many room requests. Please wait before creating a new room.',
+          )
+        }
+
         if (isInvalidName(data.name))
           return socket.emit('error', 'Name is required')
 
@@ -214,6 +235,13 @@ export function setupSocketHandler(io: Server) {
 
     socket.on('joinRoom', (data: JoinRoomPayload) => {
       try {
+        if (!checkRateLimit(`join-${socket.id}`, 4, 10000)) {
+          return socket.emit(
+            'error',
+            'Too many join requests. Please wait a moment.',
+          )
+        }
+
         if (isInvalidName(data.name))
           return socket.emit('error', 'Name is required')
 
@@ -240,6 +268,7 @@ export function setupSocketHandler(io: Server) {
         const targetSocket = io.sockets.sockets.get(data.targetId)
         if (targetSocket) {
           socketRoomMap.delete(data.targetId)
+          clearRateLimitTracker(data.targetId)
           targetSocket.leave(data.roomId)
           targetSocket.emit('kicked')
         }
