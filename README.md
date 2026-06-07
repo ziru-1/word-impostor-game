@@ -141,19 +141,24 @@ npm run test
 
 ## Testing
 
-The server has 53+ unit tests across 11 test files covering all game logic functions:
+The server has 65+ unit tests across 11 test files covering all game logic functions:
 
 - `createRoom` - room creation and initial state
-- `joinRoom` - player joining and room capacity
-- `startGame` - word assignment, impostor selection, Fisher-Yates shuffle
-- `submitDescription` - turn order, validation, phase tracking
-- `checkDescriptionPhaseEnd` - round advancement and auto-transition on round 3
-- `submitRoundDecision` - majority vote tallying
-- `castVote` - vote counting and tie-breaking
-- `submitPlayAgain` - lobby reset flow
-- `sendMessage` - chat validation
-- `removePlayerFromRoom` - host reassignment
-- `toPublicGameRoom` - sensitive field stripping
+- `getRoom` - map lookups and invalid room exception handling
+- `updateRoom` - map persistence state sync
+- `joinRoom` - player joining, system logs, and room capacity limits
+- `kickPlayerFromRoom` - host permission guard check, self-kick blocking, and lobby stage restrictions
+- `startGame` - secret word assignment, impostor selection, and Fisher-Yates turn order shuffle
+- `submitDescription` - validation and strict turn tracking
+- `checkDescriptionPhaseEnd` - archiving rounds into history and resetting state fields
+- `submitRoundDecision` - majority vote tallying and round 3 auto-transition to voting
+- `toggleImpostorHint` - game settings modifications restricted to host in lobby
+- `castVote` - vote counting, validation, and tie-breaking
+- `submitPlayAgain` - collection of ready players
+- `resetRoomToLobby` - complete clearance of roles and board state back to lobby defaults
+- `sendMessage` - room chat string parsing and validation
+- `removePlayerFromRoom` - player abandonment, host reassignment, and premature game end guards
+- `toPublicGameRoom` - extraction helper stripping sensitive role values from clients
 
 ---
 
