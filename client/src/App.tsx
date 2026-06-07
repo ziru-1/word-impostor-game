@@ -72,7 +72,15 @@ export default function App() {
       setErrorMessage(error || 'An unexpected error occurred')
       setIsConnecting(false)
       setIsStartingGame(false)
-      stopGameMusic()
+
+      const isRateLimitError =
+        error?.toLowerCase().includes('too fast') ||
+        error?.toLowerCase().includes('too many requests')
+
+      if (!isRateLimitError) {
+        stopGameMusic()
+      }
+
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
       toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 3000)
     })
