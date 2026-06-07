@@ -83,6 +83,17 @@ All game state is sent to clients as `PublicGameRoom` - a stripped version that 
 
 ---
 
+## Security & Rate Limiting
+
+To prevent malicious bot spamming and ensure server stability, the backend implements a custom **in-memory sliding-window rate limiter** utility that tracks real-time event frequencies per connection without external dependencies:
+
+- **Global Interaction Guard:** Processes all incoming Socket.IO events through a middleware layer, restricting users to a tight limit of **8 overall actions per 3 seconds** (covers chat spam and rapid UI button clicking).
+- **Heavy Resource Protection:** Implements strict independent thresholds on expensive operations, limiting users to a maximum of **2 room creation requests** and **4 room joining attempts** per 10 seconds.
+- **Graceful Client Handling:** Rate limit triggers block execution before parsing game states, bubble up via a custom `socket.on('error')` payload to the React frontend to display an interactive warning toast, and preserve background music play states.
+- **Automated Memory Cleanup:** Rate limiting maps are instantly wiped upon a client's disconnection or room abandonment to prevent long-term memory leaks.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
