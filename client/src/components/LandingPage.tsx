@@ -9,6 +9,8 @@ interface Props {
   isPending: boolean
 }
 
+type Tab = 'create' | 'join'
+
 export default function LandingPage({
   initialName,
   onCreateRoom,
@@ -18,15 +20,12 @@ export default function LandingPage({
   const [name, setName] = useState(initialName)
   const [roomCode, setRoomCode] = useState('')
   const [showHowToPlay, setShowHowToPlay] = useState(false)
-
-  const [loadingAction, setLoadingAction] = useState<'create' | 'join' | null>(
-    null,
-  )
+  const [activeTab, setActiveTab] = useState<Tab>('join')
+  const [loadingAction, setLoadingAction] = useState<Tab | null>(null)
 
   const trimmedName = name.trim()
   const trimmedCode = roomCode.trim()
 
-  // Reset tracking if App.tsx signals that we are no longer loading
   if (!isPending && loadingAction !== null) {
     setLoadingAction(null)
   }
@@ -75,60 +74,102 @@ export default function LandingPage({
 
           {/* Card */}
           <div className={styles.card}>
-            <div className={styles.nameRow}>
-              <label className={styles.label} htmlFor='player-name'>
-                Your name
-              </label>
-              <input
-                id='player-name'
-                className={styles.input}
-                placeholder='Enter your name...'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoComplete='off'
-                maxLength={24}
-                disabled={isPending}
-              />
-            </div>
-
-            <button
-              className={styles.primaryBtn}
-              onClick={handleCreate}
-              disabled={!trimmedName || isPending}
-            >
-              {isPending && loadingAction === 'create'
-                ? 'Creating Room...'
-                : 'Create Room'}
-            </button>
-
-            <div className={styles.divider}>
-              <span className={styles.dividerLine} />
-              <span className={styles.dividerText}>or join existing</span>
-              <span className={styles.dividerLine} />
-            </div>
-
-            <div className={styles.joinGroup}>
-              <input
-                className={styles.input}
-                placeholder='Room code'
-                value={roomCode}
-                onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                autoComplete='off'
-                maxLength={12}
-                disabled={isPending}
-              />
+            {/* Tabs */}
+            <div className={styles.tabs}>
               <button
-                className={styles.secondaryBtn}
+                className={`${styles.tab} ${activeTab === 'join' ? styles.tabActive : ''}`}
+                onClick={() => setActiveTab('join')}
+                disabled={isPending}
+              >
+                Join room
+              </button>
+              <button
+                className={`${styles.tab} ${activeTab === 'create' ? styles.tabActive : ''}`}
+                onClick={() => setActiveTab('create')}
+                disabled={isPending}
+              >
+                Create room
+              </button>
+            </div>
+
+            {/* Create panel — always mounted, hidden when inactive */}
+            <div
+              className={`${styles.panel} ${activeTab !== 'create' ? styles.panelHidden : ''}`}
+            >
+              <div className={styles.nameRow}>
+                <label className={styles.label} htmlFor='player-name-create'>
+                  Your name
+                </label>
+                <input
+                  id='player-name-create'
+                  className={styles.input}
+                  placeholder='Enter your name...'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete='off'
+                  maxLength={24}
+                  disabled={isPending}
+                />
+              </div>
+              <button
+                className={styles.primaryBtn}
+                onClick={handleCreate}
+                disabled={!trimmedName || isPending}
+              >
+                {isPending && loadingAction === 'create'
+                  ? 'Creating Room...'
+                  : 'Create Room'}
+              </button>
+            </div>
+
+            {/* Join panel — always mounted, hidden when inactive */}
+            <div
+              className={`${styles.panel} ${activeTab !== 'join' ? styles.panelHidden : ''}`}
+            >
+              <div className={styles.nameRow}>
+                <label className={styles.label} htmlFor='room-code'>
+                  Room code
+                </label>
+                <input
+                  id='room-code'
+                  className={`${styles.input} ${styles.inputCode}`}
+                  placeholder='ABCDE'
+                  value={roomCode}
+                  onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+                  autoComplete='off'
+                  maxLength={5}
+                  disabled={isPending}
+                />
+              </div>
+              <div className={styles.nameRow}>
+                <label className={styles.label} htmlFor='player-name-join'>
+                  Your name
+                </label>
+                <input
+                  id='player-name-join'
+                  className={styles.input}
+                  placeholder='Enter your name...'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete='off'
+                  maxLength={24}
+                  disabled={isPending}
+                />
+              </div>
+              <button
+                className={styles.primaryBtn}
                 onClick={handleJoin}
                 disabled={!trimmedName || !trimmedCode || isPending}
               >
-                {isPending && loadingAction === 'join' ? 'Joining...' : 'Join'}
+                {isPending && loadingAction === 'join'
+                  ? 'Joining...'
+                  : 'Join Room'}
               </button>
             </div>
           </div>
 
           <p className={styles.footer}>
-            3 – 8 players &nbsp;·&nbsp; ~10 min per game
+            3 – 8 players &nbsp;·&nbsp; ~5 min per game
           </p>
         </div>
       </div>
