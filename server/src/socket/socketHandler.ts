@@ -251,6 +251,8 @@ export function setupSocketHandler(io: Server) {
 
         socket.join(room.id)
         socketRoomMap.set(socket.id, room.id)
+
+        socket.emit('roomJoined', toPublicGameRoom(room))
         io.to(room.id).emit('roomUpdated', toPublicGameRoom(room))
       } catch (error) {
         handleError(socket, error)

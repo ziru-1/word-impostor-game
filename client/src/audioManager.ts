@@ -16,10 +16,12 @@ export const playGameMusic = () => {
 }
 
 export const stopGameMusic = () => {
-  gameMusic.fade(gameMusic.volume(), 0, 1000)
-  setTimeout(() => {
-    gameMusic.stop()
-  }, 1000)
+  if (gameMusic.playing()) {
+    gameMusic.fade(gameMusic.volume(), 0, 1000)
+    setTimeout(() => {
+      gameMusic.stop()
+    }, 1000)
+  }
 }
 
 export const chatSfx = new Howl({

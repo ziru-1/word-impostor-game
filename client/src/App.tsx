@@ -34,11 +34,15 @@ export default function App() {
   useEffect(() => {
     socket.on('connect', () => setPlayerId(socket.id ?? null))
 
-    socket.on('roomCreated', (room: PublicGameRoom) => {
+    const handleRoomInitialization = (room: PublicGameRoom) => {
       setRoom(room)
       prevChatLengthRef.current = room.chatMessages.length
       setIsConnecting(false)
-    })
+      playGameMusic()
+    }
+
+    socket.on('roomCreated', handleRoomInitialization)
+    socket.on('roomJoined', handleRoomInitialization)
 
     socket.on('roomUpdated', (room: PublicGameRoom) => {
       if (room.chatMessages.length > prevChatLengthRef.current) {
@@ -88,7 +92,6 @@ export default function App() {
     socket.on('connect_error', () => {
       setErrorMessage('Unable to connect to the server. It might be offline.')
       setIsConnecting(false)
-      stopGameMusic()
 
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
       toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 4000)
@@ -97,6 +100,7 @@ export default function App() {
     return () => {
       socket.off('connect')
       socket.off('roomCreated')
+      socket.off('roomJoined')
       socket.off('roomUpdated')
       socket.off('kicked')
       socket.off('playerGameData')
@@ -114,16 +118,12 @@ export default function App() {
     localStorage.setItem('impostor_player_name', name)
     setIsConnecting(true)
 
-    playGameMusic()
-
     socket.connect()
     socket.emit('createRoom', { name })
   }
 
   function onJoinRoom(name: string, roomId: string) {
     setIsConnecting(true)
-
-    playGameMusic()
 
     socket.connect()
     socket.emit('joinRoom', { name, roomId })
