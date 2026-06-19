@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import HowToPlayModal from './HowToPlayModal'
 import styles from './LandingPage.module.css'
 
@@ -26,9 +26,12 @@ export default function LandingPage({
   const trimmedName = name.trim()
   const trimmedCode = roomCode.trim()
 
-  if (!isPending && loadingAction !== null) {
-    setLoadingAction(null)
-  }
+  // Safely synchronize button animations when the parent unsets loading states
+  useEffect(() => {
+    if (!isPending) {
+      setLoadingAction(null)
+    }
+  }, [isPending])
 
   const handleCreate = () => {
     if (!trimmedName || isPending) return
