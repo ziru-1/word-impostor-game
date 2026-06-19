@@ -85,6 +85,15 @@ export default function App() {
       toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 3000)
     })
 
+    socket.on('connect_error', () => {
+      setErrorMessage('Unable to connect to the server. It might be offline.')
+      setIsConnecting(false)
+      stopGameMusic()
+
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
+      toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 4000)
+    })
+
     return () => {
       socket.off('connect')
       socket.off('roomCreated')
@@ -93,6 +102,7 @@ export default function App() {
       socket.off('playerGameData')
       socket.off('gameReveal')
       socket.off('error')
+      socket.off('connect_error')
       socket.disconnect()
 
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
