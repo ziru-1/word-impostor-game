@@ -123,6 +123,8 @@ export default function App() {
   }
 
   function onJoinRoom(name: string, roomId: string) {
+    setPersistedName(name)
+    localStorage.setItem('impostor_player_name', name)
     setIsConnecting(true)
 
     socket.connect()
