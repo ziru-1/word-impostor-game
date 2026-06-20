@@ -93,6 +93,8 @@ export default function App() {
       setErrorMessage('Unable to connect to the server. It might be offline.')
       setIsConnecting(false)
 
+      socket.disconnect()
+
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
       toastTimeoutRef.current = setTimeout(() => setErrorMessage(null), 4000)
     })
