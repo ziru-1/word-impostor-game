@@ -6,45 +6,33 @@ export const gameMusic = new Howl({
   src: ['/audio/inu_neko_bgm.ogg'],
   loop: true,
   volume: 0.0,
+  preload: true,
 })
 
-export const playGameMusic = () => {
-  console.log('[music] playGameMusic called', {
-    playing: gameMusic.playing(),
-    state: gameMusic.state?.(),
-    ctxState: Howler.ctx?.state,
-  })
-
-  if (!gameMusic.playing()) {
-    const id = gameMusic.play()
-
-    console.log('[music] play() returned id:', id)
-
-    gameMusic.once(
-      'play',
-      () => {
-        console.log('[music] actually started playing')
-      },
-      id,
-    )
-
-    gameMusic.once(
-      'playerror',
-      (_id, err) => {
-        console.log('[music] playerror:', err)
-      },
-      id,
-    )
+export const unlockGameAudio = () => {
+  if (Howler.ctx?.state === 'suspended') {
+    Howler.ctx.resume()
   }
 }
 
+export const playGameMusic = () => {
+  if (gameMusic.playing()) return
+
+  gameMusic.play()
+
+  gameMusic.once('play', () => {
+    gameMusic.fade(0, DEFAULT_VOLUME, 500)
+  })
+}
+
 export const stopGameMusic = () => {
-  if (gameMusic.playing()) {
-    gameMusic.fade(gameMusic.volume(), 0, 1000)
-    setTimeout(() => {
-      gameMusic.stop()
-    }, 1000)
-  }
+  if (!gameMusic.playing()) return
+
+  gameMusic.fade(gameMusic.volume(), 0, 800)
+
+  setTimeout(() => {
+    gameMusic.stop()
+  }, 800)
 }
 
 export const chatSfx = new Howl({

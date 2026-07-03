@@ -5,7 +5,12 @@ import type {
 } from '@impostor/types'
 import { useEffect, useRef, useState } from 'react'
 import styles from './App.module.css'
-import { chatSfx, playGameMusic, stopGameMusic } from './audioManager'
+import {
+  chatSfx,
+  playGameMusic,
+  stopGameMusic,
+  unlockGameAudio,
+} from './audioManager'
 import Chat from './components/Chat'
 import GameScreen from './components/GameScreen'
 import LandingPage from './components/LandingPage'
@@ -121,6 +126,7 @@ export default function App() {
     setPersistedName(name)
     localStorage.setItem('impostor_player_name', name)
     setIsConnecting(true)
+    unlockGameAudio()
 
     socket.connect()
     socket.emit('createRoom', { name })
@@ -130,6 +136,7 @@ export default function App() {
     setPersistedName(name)
     localStorage.setItem('impostor_player_name', name)
     setIsConnecting(true)
+    unlockGameAudio()
 
     socket.connect()
     socket.emit('joinRoom', { name, roomId })
