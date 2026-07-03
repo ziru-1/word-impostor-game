@@ -1,4 +1,4 @@
-import { Howl } from 'howler'
+import { Howl, Howler } from 'howler'
 
 export const DEFAULT_VOLUME = 0.35
 
@@ -9,9 +9,32 @@ export const gameMusic = new Howl({
 })
 
 export const playGameMusic = () => {
+  console.log('[music] playGameMusic called', {
+    playing: gameMusic.playing(),
+    state: gameMusic.state?.(),
+    ctxState: Howler.ctx?.state,
+  })
+
   if (!gameMusic.playing()) {
-    gameMusic.play()
-    gameMusic.fade(0, DEFAULT_VOLUME, 500)
+    const id = gameMusic.play()
+
+    console.log('[music] play() returned id:', id)
+
+    gameMusic.once(
+      'play',
+      () => {
+        console.log('[music] actually started playing')
+      },
+      id,
+    )
+
+    gameMusic.once(
+      'playerror',
+      (_id, err) => {
+        console.log('[music] playerror:', err)
+      },
+      id,
+    )
   }
 }
 

@@ -35,6 +35,8 @@ export default function App() {
     socket.on('connect', () => setPlayerId(socket.id ?? null))
 
     const handleRoomInitialization = (room: PublicGameRoom) => {
+      console.log('[room] initialization via:', room.stage)
+
       setRoom(room)
       prevChatLengthRef.current = room.chatMessages.length
       setIsConnecting(false)
